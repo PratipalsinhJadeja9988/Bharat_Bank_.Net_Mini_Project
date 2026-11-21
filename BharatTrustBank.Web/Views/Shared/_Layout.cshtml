@@ -1,0 +1,428 @@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var session = HttpContextAccessor.HttpContext?.Session;
+    bool isLoggedIn = SessionHelper.IsLoggedIn(session!);
+    string? userRole = SessionHelper.GetUserRole(session!);
+    string? userFullName = SessionHelper.GetFullName(session!);
+    string? username = SessionHelper.GetUsername(session!);
+}
+<!DOCTYPE html>
+<html lang="en" style="background:#03080f;">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — BharatBank</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Three.js (Optional 3D Scene Runtime) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Fixed Background Canvas for Cinematic Galaxy & Stars (all frontend pages) -->
+    <canvas id="bg-canvas" style="position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:0;"></canvas>
+
+    <!-- Top Notice / Academic Disclaimer Bar -->
+    <div class="top-notice-bar py-1">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+                <span class="simulation-pill">ACADEMIC SIMULATION</span>
+                <span class="d-none d-md-inline text-light">College Mini Project &bull; Does not process real money</span>
+            </div>
+            <div class="d-flex align-items-center gap-3 text-light font-monospace small">
+                <span><i class="bi bi-telephone-fill text-warning me-1"></i> Helpline: 1800-200-8899</span>
+                <span class="d-none d-lg-inline"><i class="bi bi-shield-check text-success me-1"></i> 256-Bit SSL Encrypted</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Bank Navigation Header -->
+    <nav class="navbar navbar-expand-lg bank-navbar sticky-top">
+        <div class="container">
+            <!-- Brand Logo -->
+            <a class="navbar-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
+                <div class="bank-logo-icon">
+                    <i class="bi bi-bank2"></i>
+                </div>
+                <div>
+                    <div class="bank-brand-title">BharatBank</div>
+                    <div class="bank-brand-sub">Suraksha Aur Vishwas</div>
+                </div>
+            </a>
+
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler text-white border-white-50" type="button" data-bs-toggle="collapse" data-bs-target="#bankNavContent">
+                <i class="bi bi-list fs-2 text-white"></i>
+            </button>
+
+            <!-- Navigation Links -->
+            <div class="collapse navbar-collapse" id="bankNavContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    @if (!isLoggedIn)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index"><i class="bi bi-house-door me-1"></i> Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Summary"><i class="bi bi-info-circle me-1"></i> Bank Summary</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Rates"><i class="bi bi-percent me-1"></i> Interest Rates</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Offers"><i class="bi bi-tags me-1"></i> Offers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="FAQ"><i class="bi bi-question-circle me-1"></i> FAQs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Terms"><i class="bi bi-file-earmark-text me-1"></i> Terms</a>
+                        </li>
+                    }
+                    else if (userRole == "Customer")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Customer" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Customer" asp-controller="Accounts" asp-action="Index"><i class="bi bi-wallet2 me-1"></i> Accounts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Customer" asp-controller="Transfers" asp-action="Index"><i class="bi bi-arrow-left-right me-1"></i> Transfers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Customer" asp-controller="Payments" asp-action="Index"><i class="bi bi-receipt me-1"></i> Pay Bills</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"><i class="bi bi-piggy-bank me-1"></i> Deposits & Loans</a>
+                            <ul class="dropdown-menu shadow">
+                                <li><a class="dropdown-item" asp-area="Customer" asp-controller="Deposits" asp-action="FD"><i class="bi bi-safe me-2 text-warning"></i> Fixed Deposits (FD)</a></li>
+                                <li><a class="dropdown-item" asp-area="Customer" asp-controller="Deposits" asp-action="RD"><i class="bi bi-calendar-check me-2 text-primary"></i> Recurring Deposits (RD)</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" asp-area="Customer" asp-controller="Loans" asp-action="Index"><i class="bi bi-cash-coin me-2 text-success"></i> Apply for Loan</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Customer" asp-controller="Cards" asp-action="Index"><i class="bi bi-credit-card me-1"></i> Cards</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Customer" asp-controller="Investments" asp-action="Index"><i class="bi bi-graph-up-arrow me-1"></i> Investments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Customer" asp-controller="Services" asp-action="Index"><i class="bi bi-gear me-1"></i> Requests</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Customer" asp-controller="Analytics" asp-action="Index"><i class="bi bi-pie-chart me-1"></i> Analytics</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Customer" asp-controller="Support" asp-action="Index"><i class="bi bi-headset me-1"></i> Support & Chat</a>
+                        </li>
+                    }
+                    else if (userRole == "Employee")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Employee" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-speedometer2 me-1"></i> Operations Desk</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Employee" asp-controller="Verification" asp-action="KYC"><i class="bi bi-person-check me-1"></i> KYC Verifications</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Employee" asp-controller="Requests" asp-action="ChequeRequests"><i class="bi bi-journal-check me-1"></i> Cheque Requests</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Employee" asp-controller="Requests" asp-action="ServiceRequests"><i class="bi bi-list-task me-1"></i> Service Requests</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Employee" asp-controller="Complaints" asp-action="Index"><i class="bi bi-chat-left-dots me-1"></i> Support Desk</a>
+                        </li>
+                    }
+                    else if (userRole == "Manager")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Manager" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-bar-chart-line me-1"></i> BI Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Manager" asp-controller="LoanApprovals" asp-action="Index"><i class="bi bi-check2-circle me-1"></i> Loan Approvals</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Manager" asp-controller="Accounts" asp-action="Inactive"><i class="bi bi-snow me-1"></i> Inactive Accounts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Manager" asp-controller="FraudMonitoring" asp-action="Index"><i class="bi bi-shield-exclamation me-1"></i> Fraud Alerts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Manager" asp-controller="InterestRates" asp-action="Index"><i class="bi bi-sliders me-1"></i> Rates</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Manager" asp-controller="Reports" asp-action="Index"><i class="bi bi-file-earmark-bar-graph me-1"></i> Reports</a>
+                        </li>
+                    }
+                    else if (userRole == "Admin")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-grid-fill me-1"></i> Admin Portal</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Admin" asp-controller="Users" asp-action="Index"><i class="bi bi-people-fill me-1"></i> Users & Staff</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Admin" asp-controller="Advertisements" asp-action="Index"><i class="bi bi-badge-ad me-1"></i> Banners & Ads</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Admin" asp-controller="Content" asp-action="Index"><i class="bi bi-layout-text-window-reverse me-1"></i> Content & FAQs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Admin" asp-controller="Rates" asp-action="Index"><i class="bi bi-currency-exchange me-1"></i> Rates & Currency</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Admin" asp-controller="AuditLogs" asp-action="Index"><i class="bi bi-fingerprint me-1"></i> Audit Logs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Admin" asp-controller="Settings" asp-action="Index"><i class="bi bi-gear-fill me-1"></i> Settings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Admin" asp-controller="Reports" asp-action="Index"><i class="bi bi-printer me-1"></i> Reports</a>
+                        </li>
+                    }
+                </ul>
+
+                <!-- Right Side Profile / Authentication Controls -->
+                <div class="d-flex align-items-center gap-2">
+                    @if (isLoggedIn)
+                    {
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle d-flex align-items-center gap-2 py-1 px-3" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle fs-5"></i>
+                                <div class="text-start">
+                                    <div class="fw-bold small lh-1">@userFullName</div>
+                                    <span class="badge bg-warning text-dark" style="font-size: 0.65rem;">@userRole</span>
+                                </div>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow">
+                                <li class="dropdown-header">Logged in as <strong>@username</strong></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Profile"><i class="bi bi-person me-2"></i> My Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" asp-area="" asp-controller="Account" asp-action="Logout"><i class="bi bi-box-arrow-right me-2"></i> Secure Logout</a></li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="btn btn-outline-light btn-sm px-3" asp-area="" asp-controller="Account" asp-action="Login">
+                            <i class="bi bi-lock me-1"></i> NetBanking Login
+                        </a>
+                        <a class="btn btn-btb-gold btn-sm px-3" asp-area="" asp-controller="Account" asp-action="Register">
+                            <i class="bi bi-person-plus me-1"></i> Open Account
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Global Alert Toast/Message Container -->
+    <main role="main" class="flex-grow-1 pb-4">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="container mt-3">
+                <div class="alert alert-success alert-dismissible fade show shadow-sm d-flex align-items-center gap-2" role="alert">
+                    <i class="bi bi-check-circle-fill fs-5"></i>
+                    <div>@TempData["SuccessMessage"]</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="container mt-3">
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm d-flex align-items-center gap-2" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                    <div>@TempData["ErrorMessage"]</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        }
+
+        @RenderBody()
+    </main>
+
+    <!-- Floating AI Chatbot Assistant (Section 10) -->
+    @if (isLoggedIn && (userRole == "Customer" || userRole == "Manager" || userRole == "Admin"))
+    {
+        <div class="floating-chatbot-btn" data-bs-toggle="modal" data-bs-target="#aiChatModal" title="Chat with @(userRole == "Customer" ? "BharatBank Assistant" : "BharatBank Operations Assistant")">
+            <div class="floating-chatbot-pulse"></div>
+            <i class="bi bi-robot"></i>
+        </div>
+
+        <!-- AI Assistant Modal Dialog -->
+        <div class="modal fade" id="aiChatModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content shadow-lg border-0 rounded-4">
+                    <div class="modal-header bg-dark text-white rounded-top-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="bank-logo-icon" style="width: 32px; height: 32px; font-size: 1rem;">
+                                <i class="bi bi-robot text-dark"></i>
+                            </div>
+                            <div>
+                                <h6 class="modal-title fw-bold mb-0">@(userRole == "Customer" ? "BharatBank Assistant" : "BharatBank Operations Assistant")</h6>
+                                <small class="text-warning" style="font-size: 0.7rem;">Simulated AI Assistant &bull; @userRole Mode</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body bg-light p-3" id="modalChatBody" style="min-height: 280px;">
+                        <div class="d-flex mb-3">
+                            <div class="p-3 bg-white text-dark rounded-3 shadow-sm border small" style="max-width: 85%;">
+                                <strong class="text-primary d-block mb-1">BharatBank Assistant</strong>
+                                @if (userRole == "Customer")
+                                {
+                                    <span>Namaste! I can assist you with your account balance, recent transactions, spending insights, FD/RD calculations, and service requests.</span>
+                                }
+                                else
+                                {
+                                    <span>Welcome, @userFullName. You can query aggregate branch metrics, loan applications, fraud alerts count, and system status.</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-white p-2">
+                        @if (userRole == "Customer")
+                        {
+                            <form asp-area="Customer" asp-controller="Support" asp-action="SendChatMessage" method="post" class="d-flex w-100 gap-2">
+                                <input type="text" name="userMessage" class="form-control form-control-sm" placeholder="Ask about balance, transfers, loans..." required />
+                                <button type="submit" class="btn btn-btb-primary btn-sm px-3"><i class="bi bi-send-fill"></i></button>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="d-flex w-100 gap-2">
+                                <input type="text" id="opsChatInput" class="form-control form-control-sm" placeholder="Ask for customer stats, fraud alerts, loan totals..." />
+                                <button type="button" onclick="handleOpsChat()" class="btn btn-btb-primary btn-sm px-3"><i class="bi bi-send-fill"></i></button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Footer with Mandatory Academic Disclaimer (Section 1) -->
+    <footer class="bank-footer pt-5 pb-3">
+        <div class="container">
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="bank-logo-icon" style="width: 32px; height: 32px; font-size: 1rem;">
+                            <i class="bi bi-bank2"></i>
+                        </div>
+                        <h5 class="text-white mb-0">BharatBank</h5>
+                    </div>
+                    <!-- Mandatory Verbatim Disclaimer (Section 1) -->
+                    <div class="p-3 rounded-3 mb-3" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-left: 3px solid #ffd700;">
+                        <p class="small text-light mb-0" style="font-size: 0.82rem; line-height: 1.5; color: var(--color-on-surface-secondary) !important;">
+                            "This application is an academic banking simulation developed for educational purposes. It does not process real financial transactions or connect to real banking infrastructure."
+                        </p>
+                    </div>
+                    <div class="small text-light">
+                        <div><i class="bi bi-geo-alt text-warning me-2"></i> Nariman Point, Mumbai - 400021</div>
+                        <div><i class="bi bi-envelope text-warning me-2"></i> support@bharatbank.com</div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="text-white fw-bold mb-3">Banking Services</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        <li><a asp-area="" asp-controller="Home" asp-action="Summary">Savings Account</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Summary">Current Account</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Rates">Fixed Deposit (FD)</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Rates">Recurring Deposit (RD)</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Summary">Home & Personal Loans</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="text-white fw-bold mb-3">Quick Access</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        <li><a asp-area="" asp-controller="Account" asp-action="Login">Net Banking Login</a></li>
+                        <li><a asp-area="" asp-controller="Account" asp-action="Register">Open New Account</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Terms">Terms & Conditions</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="FAQ">Customer FAQs</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <h6 class="text-white fw-bold mb-3">Academic Demo Credentials (Dev Only)</h6>
+                    <div class="p-3 text-light small rounded-3" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px);">
+                        <div class="mb-1"><span class="badge bg-primary">Admin:</span> <code>admin</code> / <code>Admin@123</code></div>
+                        <div class="mb-1"><span class="badge bg-success">Manager:</span> <code>manager.sharma</code> / <code>Password@123</code></div>
+                        <div class="mb-1"><span class="badge bg-info text-dark">Employee:</span> <code>emp.vikram</code> / <code>Password@123</code></div>
+                        <div><span class="badge bg-warning text-dark">Customer:</span> <code>rahul.sharma</code> / <code>Password@123</code></div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-secondary my-3" />
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center small" style="color:var(--color-on-surface-dim);">
+                <div>
+                    &copy; 2026 BharatBank Ltd. All rights reserved. (Academic Simulation Project)
+                </div>
+                <div>
+                    <span class="me-3">Simulated License #BB-2026-ACAD</span>
+                    <a asp-area="" asp-controller="Home" asp-action="Terms" style="color:var(--color-on-surface-dim); text-decoration:underline;">Privacy &amp; Terms Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Required Libraries -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        function handleOpsChat() {
+            const input = document.getElementById('opsChatInput');
+            const body = document.getElementById('modalChatBody');
+            if (!input || !input.value.trim()) return;
+
+            const userText = input.value.trim();
+            input.value = '';
+
+            // Render User Bubble
+            const userBubble = `<div class="d-flex justify-content-end mb-3"><div class="p-3 text-white rounded-3 shadow-sm small" style="max-width: 85%; background: #0b2545;"><strong class="text-warning d-block mb-1">You</strong>${userText}</div></div>`;
+            body.innerHTML += userBubble;
+
+            // Generate Operations Assistant Answer
+            let responseText = "Operations Assistant: Processing request...";
+            const q = userText.toLowerCase();
+            if (q.includes("customer") || q.includes("user")) {
+                responseText = "Current branch statistics show 12 registered customer accounts across Savings (60%), Current (25%), and Salary (15%) portfolios.";
+            } else if (q.includes("fraud") || q.includes("alert")) {
+                responseText = "There are 2 active High-Risk fraud alerts flagged by the real-time rule engine (rapid foreign transfer attempts). Please review in Fraud Monitoring.";
+            } else if (q.includes("loan") || q.includes("approval")) {
+                responseText = "There are 3 pending Loan Applications awaiting Manager review with total requested principal of ₹28,50,000.";
+            } else if (q.includes("health") || q.includes("system") || q.includes("server")) {
+                responseText = "System Health: All services operational. Database latency: 1.8ms, Memory cache hit-rate: 94.2%, Rate limiters active.";
+            } else {
+                responseText = "I can provide branch summaries for: Customer counts, Loan approvals, Fraud alerts, or System health.";
+            }
+
+            setTimeout(() => {
+                const botBubble = `<div class="d-flex mb-3"><div class="p-3 bg-white text-dark rounded-3 shadow-sm border small" style="max-width: 85%;"><strong class="text-primary d-block mb-1">BharatBank Operations Assistant</strong>${responseText}</div></div>`;
+                body.innerHTML += botBubble;
+                body.scrollTop = body.scrollHeight;
+            }, 400);
+        }
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
