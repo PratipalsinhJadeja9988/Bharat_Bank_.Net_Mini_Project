@@ -1,0 +1,86 @@
+@model Customer?
+@{
+    ViewData["Title"] = "Customer Profile & KYC Status";
+}
+
+<div class="container my-5" style="max-width: 850px;">
+    @if (Model != null)
+    {
+        <div class="card shadow-sm p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 bg-primary text-white rounded-circle fs-3">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-0">@Model.FullName</h3>
+                        <small class="text-muted">Customer Code: <strong>@Model.CustomerCode</strong> &bull; Segment: <span class="badge bg-info text-dark">@Model.Segment</span></small>
+                    </div>
+                </div>
+                <span class="badge @(Model.KYCStatus == "Verified" ? "bg-success" : "bg-warning text-dark") fs-6 px-3 py-2">
+                    <i class="bi bi-patch-check-fill me-1"></i> KYC: @Model.KYCStatus
+                </span>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <h6 class="text-muted small fw-bold text-uppercase">Contact Details</h6>
+                    <ul class="list-group list-group-flush small">
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Email Address:</span>
+                            <span class="fw-semibold">@Model.Email</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Mobile Number:</span>
+                            <span class="fw-semibold">@Model.MobileNumber</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Registered Address:</span>
+                            <span class="fw-semibold text-end">@Model.Address, @Model.City, @Model.State - @Model.Pincode</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-muted small fw-bold text-uppercase">Identification & Nominee</h6>
+                    <ul class="list-group list-group-flush small">
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">PAN Number:</span>
+                            <span class="fw-semibold text-uppercase">@Model.PAN</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Aadhaar Reference:</span>
+                            <span class="fw-semibold">@Model.Aadhaar</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Nominee Name:</span>
+                            <span class="fw-semibold">@(Model.NomineeName ?? "Not Configured") (@(Model.NomineeRelation ?? "N/A"))</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Member Since:</span>
+                            <span class="fw-semibold">@Model.CreatedAt.ToString("dd MMMM yyyy")</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <div class="d-flex justify-content-between align-items-center">
+                <a asp-area="Customer" asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                </a>
+                <a asp-area="Customer" asp-controller="Services" asp-action="Index" class="btn btn-btb-primary">
+                    <i class="bi bi-pencil-square me-1"></i> Request Profile or Nominee Update
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info shadow-sm p-4 text-center">
+            <h5>Staff Profile</h5>
+            <p class="text-muted mb-0">You are currently logged in as Staff. Access administrative controls from the main top navigation.</p>
+        </div>
+    }
+</div>
