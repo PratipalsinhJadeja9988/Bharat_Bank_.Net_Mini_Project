@@ -1,0 +1,53 @@
+@model List<FAQ>
+@{
+    ViewData["Title"] = "Customer FAQs & Help Center";
+    string selectedCat = ViewBag.SelectedCategory as string ?? "All";
+}
+
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <div class="section-gold-line"></div>
+        <h1 class="fw-bold display-6" style="font-family:var(--font-display); color:var(--color-on-surface);">Frequently Asked Questions</h1>
+        <p style="color:var(--color-on-surface-secondary);">Quick answers to common questions about BharatBank accounts, transfers, loans, and security</p>
+    </div>
+
+    <!-- Category Filter Pills -->
+    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+        <a asp-action="FAQ" asp-route-category="" class="btn btn-sm @(selectedCat == "All" ? "btn-btb-primary" : "btn-outline-secondary")">All FAQs</a>
+        <a asp-action="FAQ" asp-route-category="Accounts" class="btn btn-sm @(selectedCat == "Accounts" ? "btn-btb-primary" : "btn-outline-secondary")">Accounts</a>
+        <a asp-action="FAQ" asp-route-category="Transfers" class="btn btn-sm @(selectedCat == "Transfers" ? "btn-btb-primary" : "btn-outline-secondary")">Transfers</a>
+        <a asp-action="FAQ" asp-route-category="Loans" class="btn btn-sm @(selectedCat == "Loans" ? "btn-btb-primary" : "btn-outline-secondary")">Loans</a>
+        <a asp-action="FAQ" asp-route-category="Deposits" class="btn btn-sm @(selectedCat == "Deposits" ? "btn-btb-primary" : "btn-outline-secondary")">Deposits</a>
+        <a asp-action="FAQ" asp-route-category="Security" class="btn btn-sm @(selectedCat == "Security" ? "btn-btb-primary" : "btn-outline-secondary")">Security</a>
+    </div>
+
+    <!-- FAQ Accordion -->
+    <div class="accordion" id="bankFaqAccordion" style="--bs-accordion-bg: transparent; --bs-accordion-border-color: var(--color-border); --bs-accordion-color: var(--color-on-surface);">
+        @if (Model.Any())
+        {
+            for (int i = 0; i < Model.Count; i++)
+            {
+                var faq = Model[i];
+                <div class="accordion-item" style="background:var(--glass-bg); border:1px solid var(--color-border); border-radius:12px; margin-bottom:0.5rem;">
+                    <h2 class="accordion-header" id="heading_@faq.FAQId">
+                        <button class="accordion-button @(i == 0 ? "" : "collapsed") fw-semibold" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#collapse_@faq.FAQId"
+                                style="background:transparent; color:var(--color-on-surface); border-radius:12px; box-shadow:none;">
+                            <span class="badge me-2" style="background:rgba(0,212,170,0.12); color:var(--color-accent); border:1px solid rgba(0,212,170,0.2);">@faq.Category</span>
+                            @faq.Question
+                        </button>
+                    </h2>
+                    <div id="collapse_@faq.FAQId" class="accordion-collapse collapse @(i == 0 ? "show" : "")" data-bs-parent="#bankFaqAccordion">
+                        <div class="accordion-body" style="color:var(--color-on-surface-secondary); line-height:1.7; background:transparent;">
+                            @faq.Answer
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="p-4 text-center" style="color:var(--color-on-surface-secondary);">No FAQs found for this category.</div>
+        }
+    </div>
+</div>
