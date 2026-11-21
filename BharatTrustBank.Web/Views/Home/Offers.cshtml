@@ -1,0 +1,56 @@
+@model List<Offer>
+@{
+    ViewData["Title"] = "Promotional Offers & Rewards";
+}
+
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <div class="section-gold-line"></div>
+        <h1 class="fw-bold display-6" style="font-family:var(--font-display); color:var(--color-on-surface);">
+            Exclusive Offers &amp; Card Privileges
+        </h1>
+        <p style="color:var(--color-on-surface-secondary);">Enjoy special merchant discounts, cashback, and lifestyle privileges with BharatBank Cards</p>
+    </div>
+
+    <div class="row g-4">
+        @if (Model.Any())
+        {
+            @foreach (var offer in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="tilt-card h-100">
+                        <div class="card h-100 p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge" style="background:rgba(255,107,107,0.15); color:var(--color-error); border:1px solid rgba(255,107,107,0.25); padding:0.4rem 0.8rem;">
+                                    @offer.Category
+                                </span>
+                                <small style="color:var(--color-on-surface-secondary);">
+                                    <i class="bi bi-clock me-1"></i> Valid till @offer.ValidTill.ToString("dd MMM yyyy")
+                                </small>
+                            </div>
+                            <h5 class="fw-bold mb-2" style="font-family:var(--font-brand); color:var(--color-on-surface);">@offer.Title</h5>
+                            <p class="small flex-grow-1" style="color:var(--color-on-surface-secondary);">@offer.Description</p>
+                            @if (!string.IsNullOrEmpty(offer.DiscountCode))
+                            {
+                                <div class="d-flex align-items-center justify-content-between p-2 rounded-3"
+                                     style="background:var(--color-surface-container-low); border:1px solid var(--color-border);">
+                                    <code class="fs-6 fw-bold" style="color:var(--color-accent);">@offer.DiscountCode</code>
+                                    <button class="btn btn-sm btn-outline-secondary btn-copy" data-clipboard-text="@offer.DiscountCode">
+                                        <i class="bi bi-copy"></i> Copy
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-gift fs-1 mb-3 d-block" style="color:var(--color-on-surface-dim);"></i>
+                <p style="color:var(--color-on-surface-secondary);">No promotional offers currently active.</p>
+            </div>
+        }
+    </div>
+</div>
