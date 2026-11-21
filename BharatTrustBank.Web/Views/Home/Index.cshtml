@@ -1,0 +1,293 @@
+@{
+    ViewData["Title"] = "Welcome to BharatBank";
+    var ads = ViewBag.Advertisements as List<Advertisement> ?? new List<Advertisement>();
+    var offers = ViewBag.Offers as List<Offer> ?? new List<Offer>();
+    var rates = ViewBag.InterestRates as List<InterestRate> ?? new List<InterestRate>();
+    var currencies = ViewBag.Currencies as List<CurrencyRate> ?? new List<CurrencyRate>();
+}
+
+<!-- ─── Hero Section with 3D Canvas (Section 3.0 & 3.3) ─── -->
+<div class="container mt-4">
+    <div class="card hero-section-card border-0 rounded-4 overflow-hidden shadow-lg">
+        <div class="row align-items-center g-0 p-4 p-lg-5">
+            <div class="col-lg-7 text-white pe-lg-4">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill fw-semibold small mb-3"
+                     style="background:rgba(255,215,0,0.12); color:var(--color-gold); border:1px solid rgba(255,215,0,0.25);">
+                    <i class="bi bi-stars"></i> Next-Gen Academic Banking Simulation
+                </div>
+                <h1 class="display-4 fw-bold mb-3" style="font-family:var(--font-display); color:var(--color-on-surface); line-height:1.15;">
+                    Experience Smart,<br> Secure Banking<br>
+                    <span style="color:var(--color-gold);">with BharatBank</span>
+                </h1>
+                <p class="lead mb-4" style="color:var(--color-on-surface-secondary); font-size:1.05rem; line-height:1.7;">
+                    Explore real-time simulated fund transfers (IMPS/NEFT/UPI), dynamic FDs/RDs,
+                    automated AI chatbot assistants, and comprehensive role-based portals.
+                </p>
+
+                <!-- Mandatory Academic Disclaimer Note -->
+                <div class="p-3 rounded-3 mb-4" style="background:rgba(255,215,0,0.07); border:1px solid rgba(255,215,0,0.20);">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-info-circle-fill fs-5" style="color:var(--color-gold);"></i>
+                        <small style="color:var(--color-on-surface-secondary); line-height:1.5;">
+                            "This application is an academic banking simulation developed for educational purposes.
+                            It does not process real financial transactions or connect to real banking infrastructure."
+                        </small>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-3">
+                    <a asp-controller="Home" asp-action="Summary" class="btn btn-btb-gold px-4 py-3 fw-bold shadow">
+                        Explore Bank Summary <i class="bi bi-arrow-right-circle ms-2"></i>
+                    </a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light px-4 py-3 fw-semibold">
+                        <i class="bi bi-lock me-1"></i> NetBanking Login
+                    </a>
+                </div>
+            </div>
+
+            <!-- 3D Interactive Centerpiece Canvas (Section 3.0) -->
+            <div class="col-lg-5 text-center mt-4 mt-lg-0">
+                <div class="position-relative hero-canvas-wrapper">
+                    <canvas id="hero3dCanvas"></canvas>
+                </div>
+                <div class="mt-3" style="color:var(--color-on-surface-dim); font-size:0.82rem;">
+                    <i class="bi bi-cursor-fill me-1" style="color:var(--color-gold);"></i>
+                    Interactive 3D Card — Move mouse to tilt &amp; rotate
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Quick Actions Strip (3D Tilt-on-Hover) ─── -->
+<div class="container mt-4">
+    <div class="row g-3">
+        <div class="col-6 col-md-3">
+            <div class="tilt-card h-100">
+                <a asp-controller="Account" asp-action="Login" class="quick-action-btn shadow-sm">
+                    <div class="action-icon"><i class="bi bi-person-lock"></i></div>
+                    <div class="fw-semibold" style="color:var(--color-on-surface);">NetBanking Login</div>
+                    <small>Customer &amp; Staff Portal</small>
+                </a>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="tilt-card h-100">
+                <a asp-controller="Account" asp-action="Register" class="quick-action-btn shadow-sm">
+                    <div class="action-icon"><i class="bi bi-person-plus"></i></div>
+                    <div class="fw-semibold" style="color:var(--color-on-surface);">Open Bank Account</div>
+                    <small>Instant Digital A/C</small>
+                </a>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="tilt-card h-100">
+                <a asp-controller="Home" asp-action="Rates" class="quick-action-btn shadow-sm">
+                    <div class="action-icon"><i class="bi bi-percent"></i></div>
+                    <div class="fw-semibold" style="color:var(--color-on-surface);">Interest Rates</div>
+                    <small>FD, RD &amp; Loan Rates</small>
+                </a>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="tilt-card h-100">
+                <a asp-controller="Home" asp-action="FAQ" class="quick-action-btn shadow-sm">
+                    <div class="action-icon"><i class="bi bi-chat-heart"></i></div>
+                    <div class="fw-semibold" style="color:var(--color-on-surface);">Customer Helpdesk</div>
+                    <small>FAQs &amp; AI Chatbot</small>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Banking Products Showcase (3D Tilt Cards) ─── -->
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <div class="section-gold-line"></div>
+        <h2 class="fw-bold" style="font-family:var(--font-display); color:var(--color-on-surface);">
+            Comprehensive Banking Products
+        </h2>
+        <p style="color:var(--color-on-surface-secondary);">
+            Tailored financial solutions designed for individual growth and academic demonstration
+        </p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Savings Account -->
+        <div class="col-md-6 col-lg-3">
+            <div class="tilt-card h-100">
+                <div class="card product-card h-100 p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="p-2 rounded-3 fs-3 bg-primary-subtle">
+                            <i class="bi bi-wallet2 text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold" style="font-family:var(--font-brand); color:var(--color-on-surface);">Savings A/C</h5>
+                            <small style="color:var(--color-accent); font-weight:600;">Up to 4.25% p.a.</small>
+                        </div>
+                    </div>
+                    <p class="small mb-4" style="color:var(--color-on-surface-secondary);">
+                        High interest savings account with zero maintenance fees, simulated RuPay debit card, and unlimited digital transfers.
+                    </p>
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-sm btn-outline-primary mt-auto">Apply Online</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fixed Deposit -->
+        <div class="col-md-6 col-lg-3">
+            <div class="tilt-card h-100">
+                <div class="card product-card h-100 p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="p-2 rounded-3 fs-3 bg-warning-subtle">
+                            <i class="bi bi-safe" style="color:var(--color-gold);"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold" style="font-family:var(--font-brand); color:var(--color-on-surface);">Fixed Deposit</h5>
+                            <small style="color:#60a5fa; font-weight:600;">Up to 8.15% p.a.</small>
+                        </div>
+                    </div>
+                    <p class="small mb-4" style="color:var(--color-on-surface-secondary);">
+                        Guaranteed high returns with flexible tenure options from 6 months to 10 years and special rates for Senior Citizens.
+                    </p>
+                    <a asp-controller="Home" asp-action="Rates" class="btn btn-sm btn-outline-primary mt-auto">View FD Rates</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Home Loans -->
+        <div class="col-md-6 col-lg-3">
+            <div class="tilt-card h-100">
+                <div class="card product-card h-100 p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="p-2 rounded-3 fs-3 bg-success-subtle">
+                            <i class="bi bi-house-door" style="color:var(--color-accent);"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold" style="font-family:var(--font-brand); color:var(--color-on-surface);">Home Loans</h5>
+                            <small style="color:var(--color-accent); font-weight:600;">Starting @@ 8.25%</small>
+                        </div>
+                    </div>
+                    <p class="small mb-4" style="color:var(--color-on-surface-secondary);">
+                        Fulfill your dream home aspirations with affordable EMIs, minimal documentation, and instant pre-approval simulations.
+                    </p>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-outline-primary mt-auto">Calculate EMI</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credit Cards -->
+        <div class="col-md-6 col-lg-3">
+            <div class="tilt-card h-100">
+                <div class="card product-card h-100 p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="p-2 rounded-3 fs-3 bg-danger-subtle">
+                            <i class="bi bi-credit-card-2-front" style="color:var(--color-error);"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold" style="font-family:var(--font-brand); color:var(--color-on-surface);">Credit Cards</h5>
+                            <small style="color:var(--color-error); font-weight:600;">4X Reward Points</small>
+                        </div>
+                    </div>
+                    <p class="small mb-4" style="color:var(--color-on-surface-secondary);">
+                        Exclusive dining privileges, airport lounge access, milestone reward vouchers, and simulated fraud protection.
+                    </p>
+                    <a asp-controller="Home" asp-action="Offers" class="btn btn-sm btn-outline-primary mt-auto">Explore Cards</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Live Interest Rates & Forex Ticker ─── -->
+<div class="container mb-5">
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center py-3">
+                    <span class="fw-bold" style="color:var(--color-on-surface);">
+                        <i class="bi bi-percent me-2" style="color:var(--color-gold);"></i> Current Deposit &amp; Loan Rates
+                    </span>
+                    <a asp-controller="Home" asp-action="Rates" class="small fw-semibold" style="color:var(--color-accent);">
+                        Full Schedule <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-bank table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Tenure / Tier</th>
+                                <th>Regular Rate</th>
+                                <th>Sr. Citizen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var rate in rates.Take(5))
+                            {
+                                <tr>
+                                    <td class="fw-semibold" style="color:var(--color-on-surface);">@rate.ProductType</td>
+                                    <td>@rate.TenureOrTier</td>
+                                    <td class="fw-bold" style="color:#60a5fa;">@rate.RegularRate%</td>
+                                    <td class="fw-bold" style="color:var(--color-accent);">@rate.SeniorCitizenRate%</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center py-3">
+                    <span class="fw-bold" style="color:var(--color-on-surface);">
+                        <i class="bi bi-currency-exchange me-2" style="color:var(--color-accent);"></i> Demo Forex Rates (INR)
+                    </span>
+                    <span class="badge bg-light">Academic Rates</span>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-bank table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Currency</th>
+                                <th>Buy Rate</th>
+                                <th>Sell Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var curr in currencies.Take(4))
+                            {
+                                <tr>
+                                    <td>
+                                        <strong style="color:var(--color-on-surface);">@curr.CurrencyCode</strong>
+                                        <small style="color:var(--color-on-surface-secondary);"> (@curr.CurrencyName)</small>
+                                    </td>
+                                    <td class="fw-bold" style="color:var(--color-on-surface);">&#8377;@curr.BuyRate.ToString("F2")</td>
+                                    <td class="fw-bold" style="color:var(--color-error);">&#8377;@curr.SellRate.ToString("F2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── CTA — Ready to Explore ─── -->
+<div class="container mb-5 text-center">
+    <div class="cta-section p-5">
+        <div class="section-gold-line"></div>
+        <h4 class="fw-bold mb-2" style="font-family:var(--font-display); color:var(--color-on-surface);">
+            Ready to Explore BharatBank?
+        </h4>
+        <p class="mb-4" style="color:var(--color-on-surface-secondary);">
+            Proceed to the complete Bank Summary and Academic Architecture Specification
+        </p>
+        <a asp-controller="Home" asp-action="Summary" class="btn btn-btb-primary btn-lg px-5 fw-bold shadow">
+            Next: Bank Summary <i class="bi bi-arrow-right-circle ms-2"></i>
+        </a>
+    </div>
+</div>

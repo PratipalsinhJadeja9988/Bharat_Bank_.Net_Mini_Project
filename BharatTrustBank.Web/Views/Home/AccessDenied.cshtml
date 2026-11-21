@@ -1,0 +1,23 @@
+@{
+    ViewData["Title"] = "403 - Access Denied";
+}
+
+<div class="container my-5 text-center" style="max-width: 650px;">
+    <div class="card p-5 shadow-sm border-danger border-2">
+        <div class="display-1 text-danger mb-3">
+            <i class="bi bi-shield-x"></i>
+        </div>
+        <h2 class="fw-bold text-dark mb-2">403 - Access Denied</h2>
+        <p class="text-muted mb-4">
+            You do not have the required role-based permissions to access this banking resource. BharatBank security filters prevent unauthorized cross-role URL manipulation.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary px-4">
+                <i class="bi bi-house me-1"></i> Return Home
+            </a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-btb-primary px-4">
+                <i class="bi bi-person-lock me-1"></i> Login with Appropriate Role
+            </a>
+        </div>
+    </div>
+</div>

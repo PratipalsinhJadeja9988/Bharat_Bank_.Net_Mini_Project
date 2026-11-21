@@ -1,0 +1,93 @@
+@model List<InterestRate>
+@{
+    ViewData["Title"] = "Interest Rates & Forex Schedule";
+    var currencies = ViewBag.Currencies as List<CurrencyRate> ?? new List<CurrencyRate>();
+}
+
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <div class="section-gold-line"></div>
+        <h2 class="fw-bold" style="font-family:var(--font-display); color:var(--color-on-surface);">Current Interest &amp; Currency Rates</h2>
+        <p style="color:var(--color-on-surface-secondary);">Competitive deposit and lending rates managed directly by BharatBank Treasury</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Deposit & Loan Rates -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header py-3">
+                    <h5 class="mb-0 fw-bold" style="color:var(--color-on-surface);">
+                        <i class="bi bi-bank me-2" style="color:#60a5fa;"></i> Current Deposit &amp; Lending Interest Rates
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bank table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product Category</th>
+                                    <th>Tenure / Tier</th>
+                                    <th>Regular Rate (p.a.)</th>
+                                    <th>Senior Citizen (p.a.)</th>
+                                    <th>Last Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="fw-bold" style="color:var(--color-on-surface);">@item.ProductType</td>
+                                        <td>@item.TenureOrTier</td>
+                                        <td><span class="badge bg-primary fs-6">@item.RegularRate%</span></td>
+                                        <td><span class="badge bg-success fs-6">@item.SeniorCitizenRate%</span></td>
+                                        <td class="small" style="color:var(--color-on-surface-secondary);">@item.LastUpdated.ToString("dd MMM yyyy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forex Exchange Rates -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header py-3">
+                    <h5 class="mb-0 fw-bold" style="color:var(--color-on-surface);">
+                        <i class="bi bi-currency-exchange me-2" style="color:var(--color-accent);"></i> Indicative Forex Rates (INR)
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bank table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Currency</th>
+                                    <th>Buying (INR)</th>
+                                    <th>Selling (INR)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var curr in currencies)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong style="color:var(--color-on-surface);">@curr.CurrencyCode</strong><br />
+                                            <small style="color:var(--color-on-surface-secondary);">@curr.CurrencyName</small>
+                                        </td>
+                                        <td class="fw-bold" style="color:var(--color-accent);">&#8377;@curr.BuyRate.ToString("F2")</td>
+                                        <td class="fw-bold" style="color:var(--color-error);">&#8377;@curr.SellRate.ToString("F2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer py-2" style="background:transparent; border-top:1px solid var(--color-border); font-size:0.82rem; color:var(--color-on-surface-secondary);">
+                    *Forex rates are indicative academic simulations updated daily.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

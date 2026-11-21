@@ -1,0 +1,80 @@
+@{
+    ViewData["Title"] = "Terms & Conditions";
+}
+
+<div class="container my-5" style="max-width: 850px;">
+    <div class="card shadow-lg p-4 p-md-5">
+        <div>
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="p-3 rounded-3 fs-3 shadow-sm" style="background:rgba(96,165,250,0.15); color:#60a5fa;">
+                    <i class="bi bi-file-earmark-lock2-fill"></i>
+                </div>
+                <div>
+                    <h2 class="fw-bold mb-0" style="font-family:var(--font-display); color:var(--color-on-surface);">Terms &amp; Conditions</h2>
+                    <small style="color:var(--color-on-surface-secondary);">BharatBank Academic Simulation User Agreement</small>
+                </div>
+            </div>
+
+            <!-- Mandatory Verbatim Academic Disclaimer -->
+            <div class="p-4 rounded-3 d-flex align-items-start gap-3 mb-4" style="background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.25);">
+                <i class="bi bi-shield-exclamation fs-4" style="color:var(--color-gold);"></i>
+                <div>
+                    <strong class="d-block mb-1" style="color:var(--color-on-surface);">Mandatory Project Disclaimer:</strong>
+                    <p class="mb-0 small" style="color:var(--color-on-surface-secondary); line-height:1.6;">
+                        "This application is an academic banking simulation developed for educational purposes.
+                        It does not process real financial transactions or connect to real banking infrastructure."
+                    </p>
+                </div>
+            </div>
+
+            <!-- Scrollable T&C Agreement Text -->
+            <div class="p-3 rounded-3 mb-4"
+                 style="max-height:280px; overflow-y:auto; font-size:0.9rem; line-height:1.7;
+                        background:var(--color-surface-container-low); border:1px solid var(--color-border);">
+                <h6 class="fw-bold" style="color:var(--color-on-surface);">1. Academic Use and Simulation Nature</h6>
+                <p style="color:var(--color-on-surface-secondary);">BharatBank is developed solely for academic coursework, practical examination, and viva demonstration. All account balances, transactions, and services are purely simulated.</p>
+
+                <h6 class="fw-bold" style="color:var(--color-on-surface);">2. No Real Monetary Processing</h6>
+                <p style="color:var(--color-on-surface-secondary);">Under no circumstances does this application interact with the Reserve Bank of India (RBI), Real Time Gross Settlement (RTGS), National Electronic Funds Transfer (NEFT), Unified Payments Interface (UPI), or any actual financial institution.</p>
+
+                <h6 class="fw-bold" style="color:var(--color-on-surface);">3. Simulated Security &amp; Confidentiality</h6>
+                <p style="color:var(--color-on-surface-secondary);">Demo credentials (such as username, passwords, simulated OTPs, PAN numbers, and Aadhaar numbers) are stored for local demonstration. Never enter real banking passwords or actual credit/debit card credentials.</p>
+
+                <h6 class="fw-bold" style="color:var(--color-on-surface);">4. Role-Based Access Control &amp; Auditing</h6>
+                <p style="color:var(--color-on-surface-secondary);">Users must adhere to the role assignments (Customer, Employee, Manager, Admin). Any attempt to bypass authorization or manipulate parameters is logged in the simulated Audit Log system.</p>
+
+                <h6 class="fw-bold" style="color:var(--color-on-surface);">5. AI Chatbot Guidelines</h6>
+                <p style="color:var(--color-on-surface-secondary);">The integrated Customer Assistant and Operations Assistant are rule-based and AI-assisted educational tools. They identify as AI, do not guarantee financial outcomes, and respect strict role-based data boundaries.</p>
+
+                <h6 class="fw-bold" style="color:var(--color-on-surface);">6. Intellectual Property &amp; Design Citation</h6>
+                <p style="color:var(--color-on-surface-secondary); margin-bottom:0;">The design, icons, layout, and structure are created independently inspired by standard Indian banking UX. No proprietary assets or trademarks of commercial banks are utilized.</p>
+            </div>
+
+            <form asp-controller="Home" asp-action="AcceptTerms" method="post" id="termsForm">
+                <div class="form-check mb-4 p-3 rounded-3" style="background:var(--glass-bg); border:1px solid var(--color-border);">
+                    <input class="form-check-input ms-0 me-2" type="checkbox" id="chkAccept" onchange="toggleContinueBtn(this)">
+                    <label class="form-check-label fw-semibold" for="chkAccept" style="color:var(--color-on-surface);">
+                        I have read, understood, and agree to the BharatBank Terms &amp; Conditions and Academic Project Disclaimer.
+                    </label>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <a asp-controller="Home" asp-action="Summary" class="btn btn-outline-secondary px-3">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Summary
+                    </a>
+                    <button type="submit" id="btnContinue" class="btn btn-btb-primary px-4 py-2 fw-bold shadow" disabled>
+                        Accept &amp; Continue to Login <i class="bi bi-arrow-right ms-1"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleContinueBtn(chk) {
+            document.getElementById('btnContinue').disabled = !chk.checked;
+        }
+    </script>
+}

@@ -1,0 +1,144 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "NetBanking Login";
+}
+
+<div class="container my-5" style="max-width: 980px;">
+    <div class="row g-0 rounded-4 overflow-hidden shadow-lg position-relative"
+         style="border:1px solid var(--color-border);">
+
+        <!-- Left Side 3D Particle Branding Column -->
+        <div class="col-lg-5 p-5 text-white d-flex flex-column justify-content-between position-relative overflow-hidden"
+             style="background: linear-gradient(150deg, #020e1c 0%, #07213d 55%, #0e3362 100%);">
+            <!-- 3D Background Canvas -->
+            <canvas id="particle3dCanvas" class="canvas-3d-bg"></canvas>
+
+            <div class="position-relative" style="z-index: 1;">
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    <div class="bank-logo-icon">
+                        <i class="bi bi-bank2"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold" style="font-family:var(--font-brand); color:#fff;">BharatBank</h4>
+                        <small style="color:var(--color-gold);">Suraksha Aur Vishwas</small>
+                    </div>
+                </div>
+                <h3 class="fw-bold mb-3" style="font-family:var(--font-display); color:var(--color-on-surface);">Secure NetBanking Portal</h3>
+                <p class="small mb-4" style="color:var(--color-on-surface-secondary); line-height:1.7;">
+                    Access your accounts, instant fund transfers (IMPS/NEFT/UPI), Fixed Deposits, cards,
+                    and loan simulations 24x7 with bank-grade security.
+                </p>
+
+                <!-- Mandatory Verbatim Disclaimer -->
+                <div class="p-3 rounded-3 mb-3" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.10);">
+                    <small style="font-size:0.76rem; line-height:1.4; display:block; color:var(--color-on-surface-secondary);">
+                        "This application is an academic banking simulation developed for educational purposes.
+                        It does not process real financial transactions or connect to real banking infrastructure."
+                    </small>
+                </div>
+
+                <div class="d-flex flex-column gap-2 small" style="color:var(--color-on-surface-secondary);">
+                    <div><i class="bi bi-shield-check me-2" style="color:var(--color-gold);"></i> 256-Bit SSL Encryption</div>
+                    <div><i class="bi bi-fingerprint me-2" style="color:var(--color-gold);"></i> Role-Based Access Control</div>
+                    <div><i class="bi bi-robot me-2" style="color:var(--color-gold);"></i> Dual AI Banking Assistants</div>
+                </div>
+            </div>
+
+            <!-- Quick Demo Credentials Auto-Fill -->
+            <div class="mt-4 p-3 rounded-3 position-relative" style="z-index:1; background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.20);">
+                <div class="fw-bold mb-2" style="color:var(--color-gold); font-size:0.85rem;">
+                    <i class="bi bi-key-fill me-1"></i> Quick Demo Auto-Fill (Dev Mode):
+                </div>
+                <div class="d-flex flex-wrap gap-1">
+                    <button type="button" class="btn btn-sm btn-outline-light py-0 px-2" onclick="fillCreds('Customer','rahul.sharma','Password@123')">Customer</button>
+                    <button type="button" class="btn btn-sm btn-outline-light py-0 px-2" onclick="fillCreds('Employee','emp.vikram','Password@123')">Employee</button>
+                    <button type="button" class="btn btn-sm btn-outline-light py-0 px-2" onclick="fillCreds('Manager','manager.sharma','Password@123')">Manager</button>
+                    <button type="button" class="btn btn-sm btn-outline-light py-0 px-2" onclick="fillCreds('Admin','admin','Admin@123')">Admin</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side Login Form -->
+        <div class="col-lg-7 p-4 p-md-5 position-relative"
+             style="background:var(--color-surface-container);">
+            <h3 class="fw-bold mb-1" style="font-family:var(--font-display); color:var(--color-on-surface);">Sign In to Your Account</h3>
+            <p class="small mb-4" style="color:var(--color-on-surface-secondary);">Select your authorized portal role and enter credentials</p>
+
+            <form asp-action="Login" method="post" id="loginForm">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small shadow-sm mb-3"></div>
+                <input type="hidden" asp-for="ReturnUrl" />
+
+                <!-- Role Selection -->
+                <div class="mb-4">
+                    <label asp-for="Role" class="form-label fw-semibold small" style="color:var(--color-on-surface-secondary);"></label>
+                    <select asp-for="Role" id="roleSelect" class="form-select form-select-lg fs-6">
+                        <option value="Customer">Customer (Personal &amp; Corporate Banking)</option>
+                        <option value="Employee">Employee (Branch Operations &amp; KYC Desk)</option>
+                        <option value="Manager">Manager (Branch Business Intelligence &amp; Approvals)</option>
+                        <option value="Admin">Admin (System Controls &amp; Master Settings)</option>
+                    </select>
+                    <span asp-validation-for="Role" class="text-danger small"></span>
+                </div>
+
+                <!-- Username or Email -->
+                <div class="mb-4">
+                    <label asp-for="UsernameOrEmail" class="form-label fw-semibold small" style="color:var(--color-on-surface-secondary);"></label>
+                    <div class="input-group">
+                        <span class="input-group-text" style="background:var(--color-surface-container-low); border-color:var(--color-border); color:var(--color-on-surface-secondary);">
+                            <i class="bi bi-person"></i>
+                        </span>
+                        <input asp-for="UsernameOrEmail" id="usernameInput" class="form-control form-control-lg fs-6"
+                               placeholder="Enter username or registered email" required autofocus />
+                    </div>
+                    <span asp-validation-for="UsernameOrEmail" class="text-danger small"></span>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between">
+                        <label asp-for="Password" class="form-label fw-semibold small" style="color:var(--color-on-surface-secondary);"></label>
+                        <a href="javascript:void(0)" onclick="alert('For academic demo, use default password: Password@123 (or Admin@123 for admin)')"
+                           class="small" style="color:var(--color-accent);">Forgot Password?</a>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text" style="background:var(--color-surface-container-low); border-color:var(--color-border); color:var(--color-on-surface-secondary);">
+                            <i class="bi bi-lock"></i>
+                        </span>
+                        <input asp-for="Password" id="passwordInput" class="form-control form-control-lg fs-6"
+                               placeholder="Enter password" required />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="form-check mb-4">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label small" style="color:var(--color-on-surface-secondary);">
+                        Remember this secure workstation
+                    </label>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn btn-btb-primary btn-lg w-100 fw-bold shadow-sm mb-3">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Log In Securely
+                </button>
+
+                <div class="text-center small" style="color:var(--color-on-surface-secondary);">
+                    Don't have a NetBanking account?
+                    <a asp-action="Register" class="fw-bold" style="color:var(--color-accent);">Open New Account</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function fillCreds(role, user, pass) {
+            document.getElementById('roleSelect').value = role;
+            document.getElementById('usernameInput').value = user;
+            document.getElementById('passwordInput').value = pass;
+        }
+    </script>
+}
