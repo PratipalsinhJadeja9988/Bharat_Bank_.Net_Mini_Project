@@ -1,0 +1,1172 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap');
+
+/* ============================================================
+   BHARATBANK — CINEMATIC HERITAGE DARK THEME
+   Primary dark theme. All colours use CSS custom properties.
+   ============================================================ */
+
+/* ── Design Tokens ─────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --color-bg: #03080f;
+  --color-surface: #050d18;
+  --color-surface-container-low: #090f18;
+  --color-surface-container: #0c1624;
+  --color-surface-container-high: #121e30;
+  --color-surface-highest: #1a2a40;
+
+  /* Text */
+  --color-on-surface: rgba(242, 232, 213, 0.92);
+  --color-on-surface-secondary: rgba(242, 232, 213, 0.60);
+  --color-on-surface-dim: rgba(242, 232, 213, 0.35);
+
+  /* Brand Accents */
+  --color-primary: #f2e8d5;
+  /* Warm Ivory — CTAs */
+  --color-primary-text: #03080f;
+  /* Text on ivory buttons */
+  --color-accent: #00d4aa;
+  /* Teal — active, success, links */
+  --color-accent-glow: rgba(0, 212, 170, 0.18);
+  --color-gold: #ffd700;
+  /* Gold — premium/highlights */
+  --color-gold-soft: #f59e0b;
+  --color-gold-glow: rgba(255, 215, 0, 0.18);
+
+  /* Borders & Outlines */
+  --color-border: rgba(255, 255, 255, 0.09);
+  --color-border-hover: rgba(0, 212, 170, 0.35);
+  --color-outline: rgba(255, 255, 255, 0.18);
+
+  /* Glass Surfaces */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg-hover: rgba(255, 255, 255, 0.06);
+  --glass-blur: blur(20px);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+
+  /* Status */
+  --color-success: #00d4aa;
+  --color-error: #ff6b6b;
+  --color-warning: #ffd700;
+
+  /* Fonts */
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-brand: 'Outfit', 'Inter', sans-serif;
+
+  /* Legacy variable aliases — ensures old component styles still work */
+  --btb-navy: var(--color-surface-container);
+  --btb-navy-dark: var(--color-surface-container-high);
+  --btb-blue: var(--color-surface-container-low);
+  --btb-blue-light: var(--color-accent);
+  --btb-gold: var(--color-gold);
+  --btb-gold-light: var(--color-gold);
+  --btb-gold-hover: var(--color-gold-soft);
+  --btb-bg: var(--color-bg);
+  --btb-card-bg: var(--glass-bg);
+  --btb-text-main: var(--color-on-surface);
+  --btb-text-muted: var(--color-on-surface-secondary);
+  --btb-border: var(--color-border);
+  --btb-success: var(--color-success);
+  --btb-danger: var(--color-error);
+}
+
+/* ── Reset & Base ───────────────────────────────────────────── */
+html {
+  background-color: var(--color-bg);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 300;
+  background-color: var(--color-bg);
+  color: var(--color-on-surface);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Animated deep-space mesh background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(0, 212, 170, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 80% 80%, rgba(255, 215, 0, 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 80% at 50% 0%, rgba(19, 64, 116, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body>* {
+  position: relative;
+  z-index: 1;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.brand-font {
+  font-family: var(--font-display);
+  font-weight: 400;
+  color: var(--color-on-surface);
+}
+
+/* Links */
+a {
+  color: var(--color-accent);
+  transition: color 0.25s ease;
+}
+
+a:hover {
+  color: var(--color-primary);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+/* ── Theme-Aware Utility Classes ────────────────────────────── */
+.text-theme {
+  color: var(--color-on-surface) !important;
+}
+
+.text-theme-muted {
+  color: var(--color-on-surface-secondary) !important;
+}
+
+.text-theme-dim {
+  color: var(--color-on-surface-dim) !important;
+}
+
+.text-theme-accent {
+  color: var(--color-accent) !important;
+}
+
+.text-theme-gold {
+  color: var(--color-gold) !important;
+}
+
+.bg-theme {
+  background: var(--color-surface-container) !important;
+}
+
+.bg-theme-low {
+  background: var(--color-surface-container-low) !important;
+}
+
+.border-theme {
+  border-color: var(--color-border) !important;
+}
+
+/* Fix Bootstrap utility conflicts on dark bg */
+.text-dark {
+  color: var(--color-on-surface) !important;
+}
+
+.text-muted {
+  color: var(--color-on-surface-secondary) !important;
+}
+
+.text-body {
+  color: var(--color-on-surface) !important;
+}
+
+.text-secondary {
+  color: var(--color-on-surface-secondary) !important;
+}
+
+/* ── Top Notice Bar ─────────────────────────────────────────── */
+.top-notice-bar {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-on-surface-secondary);
+  font-size: 0.82rem;
+  padding: 0.4rem 0;
+  position: relative;
+  z-index: 1030;
+}
+
+.top-notice-bar .text-light,
+.top-notice-bar .text-warning {
+  color: var(--color-on-surface-secondary) !important;
+}
+
+.top-notice-bar .text-warning.bi {
+  color: var(--color-gold) !important;
+}
+
+/* ── Navigation (Matching CTA Card Translucent Glass) ─────────────────────────────── */
+.bank-navbar {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3) !important;
+  padding: 0.75rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+
+.bank-logo-icon {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, var(--color-gold), var(--color-gold-soft));
+  color: var(--color-bg);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 4px 16px var(--color-gold-glow);
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bank-logo-icon:hover {
+  transform: rotateY(20deg) scale(1.05);
+  box-shadow: 0 6px 24px var(--color-gold-glow);
+}
+
+.bank-brand-title {
+  color: var(--color-on-surface);
+  font-family: var(--font-brand);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.bank-brand-sub {
+  color: var(--color-on-surface-secondary);
+  font-size: 0.72rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.bank-navbar .nav-link {
+  color: var(--color-on-surface-secondary) !important;
+  font-weight: 400;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.85rem !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.bank-navbar .nav-link:hover,
+.bank-navbar .nav-link.active {
+  color: var(--color-on-surface) !important;
+  background: var(--glass-bg-hover);
+}
+
+.bank-navbar .nav-link.active {
+  color: var(--color-accent) !important;
+}
+
+.nav-badge {
+  background: rgba(0, 212, 170, 0.12);
+  color: var(--color-accent);
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+/* Dropdown */
+.dropdown-menu {
+  background: var(--color-surface-container-high) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6) !important;
+  border-radius: 12px !important;
+}
+
+.dropdown-item {
+  color: var(--color-on-surface-secondary) !important;
+  transition: all 0.15s ease;
+}
+
+.dropdown-item:hover {
+  background: var(--glass-bg-hover) !important;
+  color: var(--color-on-surface) !important;
+}
+
+.dropdown-header {
+  color: var(--color-on-surface-dim) !important;
+  font-size: 0.78rem;
+}
+
+.dropdown-divider {
+  border-color: var(--color-border) !important;
+}
+
+/* ── Simulation Pill ────────────────────────────────────────── */
+.simulation-pill {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff9090;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  letter-spacing: 0.5px;
+}
+
+/* ── Cards (Matching 'Ready to Explore BharatBank?' CTA Card) ─────────────────────────────────── */
+.card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 20px !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card:hover {
+  border-color: rgba(65, 238, 194, 0.35) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 212, 170, 0.08) !important;
+}
+
+.card-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  color: var(--color-on-surface) !important;
+  font-weight: 600;
+  padding: 0.95rem 1.25rem;
+}
+
+.card-body {
+  color: var(--color-on-surface);
+}
+
+/* ── HERO SECTION (Matching CTA Card Translucent Glass) ────────────── */
+.hero-section-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 20px !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+}
+
+.hero-section-card::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0, 212, 170, 0.06) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.hero-section-card::before {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.04) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-section-card>* {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero canvas wrapper — seamless transparent container */
+.hero-canvas-wrapper {
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  padding: 0.5rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 0 30px rgba(0, 212, 170, 0.03), 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+#hero3dCanvas {
+  width: 100%;
+  height: 300px;
+  border-radius: 12px;
+  display: block;
+}
+
+/* ── 3D Tilt Cards ──────────────────────────────────────────── */
+.tilt-card {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: transform 0.15s ease-out, box-shadow 0.2s ease;
+  will-change: transform;
+}
+
+.tilt-card:hover {
+  box-shadow: 0 20px 48px rgba(0, 212, 170, 0.08);
+}
+
+.tilt-3d-element {
+  transform: translateZ(25px);
+  transition: transform 0.2s ease;
+}
+
+/* ── Quick Action Buttons (Matching CTA Card) ───────────────────────────────────── */
+.quick-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 0.8rem;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 20px !important;
+  color: var(--color-on-surface);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  text-align: center;
+  height: 100%;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+}
+
+.quick-action-btn:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(65, 238, 194, 0.35) !important;
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 212, 170, 0.1) !important;
+  color: var(--color-accent);
+}
+
+.quick-action-btn .action-icon {
+  width: 52px;
+  height: 52px;
+  background: rgba(0, 212, 170, 0.12);
+  color: var(--color-accent);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  margin-bottom: 0.6rem;
+  transition: all 0.25s ease;
+}
+
+.quick-action-btn:hover .action-icon {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  transform: rotate(6deg) scale(1.1);
+}
+
+.quick-action-btn .fw-bold {
+  color: var(--color-on-surface);
+}
+
+.quick-action-btn small,
+.quick-action-btn .text-muted {
+  color: var(--color-on-surface-secondary) !important;
+  font-size: 0.8rem;
+}
+
+/* ── Banking Product Cards (Matching CTA Card) ──────────────────────────────────── */
+.product-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 20px !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+}
+
+.product-card h5 {
+  color: var(--color-on-surface) !important;
+}
+
+.product-card p,
+.product-card .small {
+  color: var(--color-on-surface-secondary) !important;
+}
+
+/* Product icon badge overrides */
+.bg-primary-subtle {
+  background: rgba(0, 150, 255, 0.12) !important;
+}
+
+.bg-warning-subtle {
+  background: rgba(255, 215, 0, 0.12) !important;
+}
+
+.bg-success-subtle {
+  background: rgba(0, 212, 170, 0.12) !important;
+}
+
+.bg-danger-subtle {
+  background: rgba(255, 107, 107, 0.12) !important;
+}
+
+.bg-info-subtle {
+  background: rgba(0, 200, 255, 0.10) !important;
+}
+
+.text-primary {
+  color: #60a5fa !important;
+}
+
+.text-warning {
+  color: var(--color-gold) !important;
+}
+
+.text-warning-emphasis {
+  color: var(--color-gold) !important;
+}
+
+.text-success {
+  color: var(--color-accent) !important;
+}
+
+.text-danger {
+  color: var(--color-error) !important;
+}
+
+.text-info {
+  color: #67e8f9 !important;
+}
+
+/* ── 3D Interactive Bank Card (Flip) ────────────────────────── */
+.card-3d-container {
+  perspective: 1200px;
+  width: 100%;
+  max-width: 380px;
+  height: 220px;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+.card-3d-flipper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+  border-radius: 18px;
+  box-shadow: 0 15px 48px rgba(0, 0, 0, 0.55);
+}
+
+.card-3d-container.is-flipped .card-3d-flipper {
+  transform: rotateY(180deg);
+}
+
+.card-3d-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 18px;
+  padding: 1.4rem 1.6rem;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.card-3d-front {
+  background: linear-gradient(135deg, #021426 0%, #0d3060 60%, #1e40af 100%);
+}
+
+.card-3d-back {
+  background: linear-gradient(135deg, #020e1a 0%, #0a2240 100%);
+  transform: rotateY(180deg);
+}
+
+.card-3d-back .magnetic-strip {
+  background: #000;
+  height: 38px;
+  margin: -0.5rem -1.6rem 0.5rem -1.6rem;
+}
+
+.card-3d-back .signature-bar {
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: monospace;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-3d-front::after,
+.card-3d-back::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -30%;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.18) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.card-chip-3d {
+  width: 44px;
+  height: 32px;
+  background: linear-gradient(135deg, #fcd34d 0%, #b45309 100%);
+  border-radius: 6px;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.card-number-3d {
+  font-family: 'Outfit', monospace;
+  font-size: 1.25rem;
+  letter-spacing: 2.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ── KPI Summary Cards ──────────────────────────────────────── */
+.kpi-card {
+  border-radius: 16px;
+  padding: 1.4rem;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+.kpi-card.kpi-blue {
+  background: linear-gradient(135deg, #0f4c81 0%, #1a365d 100%);
+}
+
+.kpi-card.kpi-gold {
+  background: linear-gradient(135deg, #b45309 0%, #78350f 100%);
+}
+
+.kpi-card.kpi-emerald {
+  background: linear-gradient(135deg, #059669 0%, #064e3b 100%);
+}
+
+.kpi-card.kpi-purple {
+  background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+}
+
+.kpi-card .kpi-label {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  opacity: 0.8;
+}
+
+.kpi-card .kpi-val {
+  font-size: 1.85rem;
+  font-weight: 800;
+  font-family: var(--font-brand);
+  margin: 0.3rem 0;
+}
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.btn-btb-primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-text);
+  font-weight: 600;
+  padding: 0.55rem 1.25rem;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+.btn-btb-primary:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-text);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--color-gold-glow);
+}
+
+.btn-btb-gold {
+  background: linear-gradient(135deg, var(--color-gold), var(--color-gold-soft));
+  border: none;
+  color: #03080f;
+  font-weight: 700;
+  padding: 0.55rem 1.25rem;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+.btn-btb-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--color-gold-glow);
+  color: #03080f;
+}
+
+/* Bootstrap button overrides for dark mode */
+.btn-outline-light {
+  color: var(--color-on-surface) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.btn-outline-light:hover {
+  background: rgba(255, 255, 255, 0.10) !important;
+  color: var(--color-on-surface) !important;
+}
+
+.btn-outline-primary {
+  color: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  background: transparent !important;
+}
+
+.btn-outline-primary:hover {
+  background: var(--color-accent) !important;
+  color: var(--color-bg) !important;
+}
+
+.btn-outline-secondary {
+  color: var(--color-on-surface-secondary) !important;
+  border-color: var(--color-border) !important;
+}
+
+.btn-outline-secondary:hover {
+  background: var(--glass-bg-hover) !important;
+  color: var(--color-on-surface) !important;
+}
+
+/* ── Forms ──────────────────────────────────────────────────── */
+.form-control,
+input,
+select,
+textarea {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-on-surface) !important;
+  border-radius: 8px !important;
+}
+
+.form-control:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-accent) !important;
+  background: rgba(0, 212, 170, 0.04) !important;
+  box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.12) !important;
+  color: var(--color-on-surface) !important;
+}
+
+.form-control::placeholder,
+input::placeholder {
+  color: var(--color-on-surface-dim) !important;
+}
+
+.form-label {
+  color: var(--color-on-surface-secondary) !important;
+  font-size: 0.88rem;
+}
+
+.form-select option {
+  background: var(--color-surface-container-high);
+  color: var(--color-on-surface);
+}
+
+/* ── Tables (No Hover Effect) ─────────────────────────────────── */
+table,
+.table,
+.table-bank,
+.table-hover,
+.table-striped,
+.table-bordered {
+  --bs-table-bg: transparent !important;
+  --bs-table-accent-bg: transparent !important;
+  --bs-table-striped-bg: transparent !important;
+  --bs-table-active-bg: transparent !important;
+  --bs-table-hover-bg: transparent !important;
+  --bs-table-hover-color: inherit !important;
+  --bs-table-color: var(--color-on-surface) !important;
+  --bs-table-border-color: var(--color-border) !important;
+  --bs-table-bg-type: transparent !important;
+  --bs-table-bg-state: transparent !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--color-on-surface) !important;
+  border-color: var(--color-border) !important;
+}
+
+table tr,
+table th,
+table td,
+.table tr,
+.table th,
+.table td,
+.table-bank tr,
+.table-bank th,
+.table-bank td,
+.table > :not(caption) > * > *,
+.table-bank > :not(caption) > * > *,
+.table-hover > :not(caption) > * > *,
+.table-striped > :not(caption) > * > *,
+.table > tbody > tr > *,
+.table-bank > tbody > tr > *,
+.table-hover > tbody > tr > * {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--color-on-surface) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  vertical-align: middle !important;
+}
+
+table thead th,
+.table thead th,
+.table-bank thead th {
+  background-color: var(--color-surface-container-low) !important;
+  background: var(--color-surface-container-low) !important;
+  color: var(--color-on-surface) !important;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+table tbody td,
+.table tbody td,
+.table-bank tbody td {
+  vertical-align: middle;
+  font-size: 0.92rem;
+  color: var(--color-on-surface-secondary) !important;
+  border-color: var(--color-border) !important;
+}
+
+/* Explicitly disable all hover effects across all tables */
+table:hover,
+table tbody tr:hover,
+table tbody tr:hover > *,
+.table:hover,
+.table tbody tr:hover,
+.table tbody tr:hover > *,
+.table-bank tbody tr:hover,
+.table-bank tbody tr:hover > *,
+.table-bank tbody tr:hover td,
+.table-hover > tbody > tr:hover,
+.table-hover > tbody > tr:hover > * {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  transform: none !important;
+}
+
+/* ── Alert Overrides ────────────────────────────────────────── */
+.alert-warning {
+  background: rgba(255, 215, 0, 0.10) !important;
+  border-color: rgba(255, 215, 0, 0.25) !important;
+  color: var(--color-on-surface) !important;
+}
+
+.alert-success {
+  background: rgba(0, 212, 170, 0.10) !important;
+  border-color: rgba(0, 212, 170, 0.25) !important;
+  color: var(--color-on-surface) !important;
+}
+
+.alert-danger {
+  background: rgba(255, 107, 107, 0.10) !important;
+  border-color: rgba(255, 107, 107, 0.25) !important;
+  color: var(--color-on-surface) !important;
+}
+
+.alert-info {
+  background: rgba(103, 232, 249, 0.10) !important;
+  border-color: rgba(103, 232, 249, 0.25) !important;
+  color: var(--color-on-surface) !important;
+}
+
+/* Specific Summary page warning disclaimer */
+.card.border-warning {
+  background: rgba(255, 215, 0, 0.07) !important;
+  border-color: rgba(255, 215, 0, 0.30) !important;
+}
+
+/* ── Badge Overrides ────────────────────────────────────────── */
+.badge.bg-primary {
+  background: rgba(96, 165, 250, 0.2) !important;
+  color: #93c5fd !important;
+  border: 1px solid rgba(96, 165, 250, 0.3) !important;
+}
+
+.badge.bg-success {
+  background: rgba(0, 212, 170, 0.15) !important;
+  color: var(--color-accent) !important;
+  border: 1px solid rgba(0, 212, 170, 0.25) !important;
+}
+
+.badge.bg-warning {
+  background: rgba(255, 215, 0, 0.15) !important;
+  color: var(--color-gold) !important;
+  border: 1px solid rgba(255, 215, 0, 0.25) !important;
+}
+
+.badge.bg-danger {
+  background: rgba(255, 107, 107, 0.15) !important;
+  color: #fca5a5 !important;
+  border: 1px solid rgba(255, 107, 107, 0.25) !important;
+}
+
+.badge.bg-info {
+  background: rgba(103, 232, 249, 0.15) !important;
+  color: #67e8f9 !important;
+}
+
+.badge.bg-light {
+  background: var(--glass-bg) !important;
+  color: var(--color-on-surface) !important;
+  border: var(--glass-border) !important;
+}
+
+.badge.bg-dark {
+  background: var(--color-surface-highest) !important;
+  color: var(--color-on-surface) !important;
+}
+
+/* ── Section Helpers ────────────────────────────────────────── */
+.section-glass {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+}
+
+.section-gold-line {
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-gold), var(--color-accent));
+  border-radius: 2px;
+  margin: 0 auto 0.75rem auto;
+}
+
+.bg-light {
+  background: var(--color-surface-container-low) !important;
+}
+
+.bg-white {
+  background: var(--color-surface-container) !important;
+}
+
+/* CTA Section */
+.cta-section {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 20px !important;
+}
+
+.cta-section h4 {
+  color: var(--color-on-surface) !important;
+}
+
+.cta-section p {
+  color: var(--color-on-surface-secondary) !important;
+}
+
+/* border-dashed  */
+.border-dashed {
+  border-style: dashed !important;
+}
+
+/* ── Footer (Matching 'Ready to Explore BharatBank?' CTA Card) ─────────────────────────────────── */
+.bank-footer {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-top: 1px solid var(--color-border) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  color: var(--color-on-surface-secondary);
+  margin-top: auto;
+  font-size: 0.88rem;
+  position: relative;
+  z-index: 1;
+}
+
+.bank-footer a {
+  color: var(--color-on-surface-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.bank-footer a:hover {
+  color: var(--color-accent);
+}
+
+.bank-footer h5,
+.bank-footer h6 {
+  color: var(--color-on-surface) !important;
+}
+
+.bank-footer code {
+  color: var(--color-accent) !important;
+  background: transparent !important;
+}
+
+/* ── Floating AI Chatbot ────────────────────────────────────── */
+.floating-chatbot-btn {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-soft) 100%);
+  color: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  box-shadow: 0 8px 28px var(--color-gold-glow);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  cursor: pointer;
+  z-index: 1040;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.floating-chatbot-btn:hover {
+  transform: scale(1.12) rotate(8deg);
+  box-shadow: 0 14px 36px rgba(255, 215, 0, 0.35);
+}
+
+.floating-chatbot-pulse {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(255, 215, 0, 0.35);
+  animation: pulse-ring 2.5s infinite;
+  z-index: -1;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* ── Chat Modal ─────────────────────────────────────────────── */
+.modal-content {
+  background: var(--color-surface-container-high) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-on-surface) !important;
+}
+
+.modal-header {
+  background: var(--color-surface-container) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.modal-body.bg-light {
+  background: var(--color-surface-container-low) !important;
+}
+
+.modal-footer.bg-white {
+  background: var(--color-surface-container) !important;
+  border-top: 1px solid var(--color-border) !important;
+}
+
+/* ── Scrollbar (Webkit) ─────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-highest);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+/* ── Login / Register Page ──────────────────────────────────── */
+#particle3dCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.canvas-3d-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hero-section-card {
+    padding: 1.5rem !important;
+  }
+
+  #hero3dCanvas {
+    height: 220px;
+  }
+}
+
+/* ── Reduced Motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+
+  .tilt-card,
+  .card-3d-flipper,
+  .bank-logo-icon,
+  .floating-chatbot-btn,
+  .kpi-card {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .floating-chatbot-pulse {
+    animation: none !important;
+  }
+}
