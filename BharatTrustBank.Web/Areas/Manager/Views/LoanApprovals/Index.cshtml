@@ -1,0 +1,85 @@
+@model List<Loan>
+@{
+    ViewData["Title"] = "Loan Applications Approval Desk";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Loan Credit & Approvals Desk</h2>
+            <p class="text-muted small">Evaluate applicant credit scores, verify income metrics, and sanction loans</p>
+        </div>
+        <a asp-action="Index" asp-controller="Dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to BI Dashboard
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bank table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Tenure & Rate</th>
+                            <th>Income</th>
+                            <th>Purpose</th>
+                            <th>Credit Score</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var l in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong class="text-dark">@l.CustomerName</strong><br />
+                                        <small class="text-muted font-monospace">@l.CustomerEmail</small>
+                                    </td>
+                                    <td><span class="badge bg-primary-subtle text-primary">@l.LoanType</span></td>
+                                    <td class="fw-bold fs-6">&#8377;@l.LoanAmount.ToString("N0")</td>
+                                    <td>@l.TenureMonths Mos<br /><small class="text-muted">@l.InterestRate% p.a.</small></td>
+                                    <td>&#8377;@l.MonthlyIncome.ToString("N0")<br /><small class="text-muted">@l.EmploymentType</small></td>
+                                    <td class="small" style="max-width: 180px;">@l.Purpose</td>
+                                    <td>
+                                        <span class="badge @(l.CreditScore >= 750 ? "bg-success" : (l.CreditScore >= 650 ? "bg-primary" : "bg-danger")) fs-6">
+                                            @l.CreditScore
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <form asp-action="ProcessLoan" method="post">
+                                                <input type="hidden" name="loanId" value="@l.LoanId" />
+                                                <input type="hidden" name="status" value="Approved" />
+                                                <input type="hidden" name="remarks" value="Approved by Credit Committee." />
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    <i class="bi bi-check-lg"></i> Sanction
+                                                </button>
+                                            </form>
+                                            <form asp-action="ProcessLoan" method="post">
+                                                <input type="hidden" name="loanId" value="@l.LoanId" />
+                                                <input type="hidden" name="status" value="Rejected" />
+                                                <input type="hidden" name="remarks" value="Credit eligibility thresholds not met." />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="8" class="text-center py-5 text-muted">No pending loan applications requiring credit sanction.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
