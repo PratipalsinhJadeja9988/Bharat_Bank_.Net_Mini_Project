@@ -1,0 +1,136 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "System Administration Master Portal";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">System Administration & Master Controls</h2>
+            <p class="text-muted small">Central core banking control center &bull; Monitor all users, transactions, banners, security, and audit logs</p>
+        </div>
+    </div>
+
+    <!-- Master KPI Metrics -->
+    <div class="row g-3 mb-5">
+        <div class="col-md-3">
+            <div class="kpi-card kpi-blue">
+                <div class="kpi-label">Total Customers</div>
+                <div class="kpi-val">@Model.TotalCustomers</div>
+                <small class="opacity-75">Staff: @Model.TotalEmployees</small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="kpi-card kpi-gold">
+                <div class="kpi-label">Total Deposits Vol.</div>
+                <div class="kpi-val">&#8377;@Model.TotalDepositsVolume.ToString("N0")</div>
+                <small class="opacity-75">@Model.TotalAccounts Total Accounts</small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="kpi-card kpi-emerald">
+                <div class="kpi-label">Total Loans Sanctioned</div>
+                <div class="kpi-val">&#8377;@Model.TotalLoansVolume.ToString("N0")</div>
+                <small class="opacity-75">Performing Assets</small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="kpi-card kpi-purple">
+                <div class="kpi-label">Active Fraud Alerts</div>
+                <div class="kpi-val">@Model.ActiveFraudAlerts</div>
+                <small class="opacity-75">Risk Rule Triggered</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Admin Links Grid -->
+    <div class="card p-3 mb-4 shadow-sm">
+        <h6 class="fw-bold text-muted small text-uppercase mb-3"><i class="bi bi-grid-3x3-gap-fill me-1 text-primary"></i> Master Administrative Controls</h6>
+        <div class="row g-3 text-center">
+            <div class="col-6 col-md-3 col-lg-2">
+                <a asp-action="Index" asp-controller="Users" class="quick-action-btn py-2">
+                    <div class="action-icon" style="width: 38px; height: 38px; font-size: 1.1rem;"><i class="bi bi-people-fill"></i></div>
+                    <div class="small fw-bold">Staff & Users</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <a asp-action="Index" asp-controller="Advertisements" class="quick-action-btn py-2">
+                    <div class="action-icon" style="width: 38px; height: 38px; font-size: 1.1rem;"><i class="bi bi-badge-ad"></i></div>
+                    <div class="small fw-bold">Ad Banners</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <a asp-action="Index" asp-controller="Content" class="quick-action-btn py-2">
+                    <div class="action-icon" style="width: 38px; height: 38px; font-size: 1.1rem;"><i class="bi bi-question-square"></i></div>
+                    <div class="small fw-bold">FAQs & Offers</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <a asp-action="Index" asp-controller="Rates" class="quick-action-btn py-2">
+                    <div class="action-icon" style="width: 38px; height: 38px; font-size: 1.1rem;"><i class="bi bi-percent"></i></div>
+                    <div class="small fw-bold">Interest Rates</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <a asp-action="Index" asp-controller="AuditLogs" class="quick-action-btn py-2">
+                    <div class="action-icon" style="width: 38px; height: 38px; font-size: 1.1rem;"><i class="bi bi-fingerprint"></i></div>
+                    <div class="small fw-bold">Audit Logs</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <a asp-action="Index" asp-controller="Settings" class="quick-action-btn py-2">
+                    <div class="action-icon" style="width: 38px; height: 38px; font-size: 1.1rem;"><i class="bi bi-gear-fill"></i></div>
+                    <div class="small fw-bold">Settings</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent System Audit Trails Table -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-shield-check text-primary me-2"></i> Real-time System Security & Audit Trail</h5>
+            <a asp-action="Index" asp-controller="AuditLogs" class="small text-decoration-none">Full Audit History <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bank table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>User & Role</th>
+                            <th>Action</th>
+                            <th>Description</th>
+                            <th>IP Address</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.RecentAuditLogs.Any())
+                        {
+                            @foreach (var a in Model.RecentAuditLogs)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@a.Username</strong><br />
+                                        <span class="badge bg-light text-dark border">@a.Role</span>
+                                    </td>
+                                    <td><span class="badge bg-primary-subtle text-primary fw-bold">@a.Action</span></td>
+                                    <td class="small text-muted" style="max-width: 350px;">@a.Description</td>
+                                    <td class="font-monospace small">@a.IPAddress</td>
+                                    <td class="small">@a.Timestamp.ToString("dd MMM yyyy, hh:mm:ss tt")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="5" class="text-center py-4 text-muted">No audit logs recorded.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
