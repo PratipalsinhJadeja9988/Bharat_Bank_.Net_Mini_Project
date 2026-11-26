@@ -1,0 +1,92 @@
+@model List<Account>
+@{
+    ViewData["Title"] = "Inactive & Dormant Accounts";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Inactive & Dormant Accounts Monitor</h2>
+            <p class="text-muted small">Rule Enforcement: Accounts with no transactions for 6+ months are automatically flagged/frozen for security</p>
+        </div>
+        <a asp-action="Index" asp-controller="Dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Rule Explanation Card -->
+    <div class="card bg-light border p-3 mb-4">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-info-circle-fill text-primary fs-5"></i>
+            <div class="small">
+                <strong>System Security Policy:</strong> Inactive accounts are protected against unauthorized debits. As Manager, you can unfreeze an account after verifying customer identity.
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bank table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Account No</th>
+                            <th>Customer Name</th>
+                            <th>Category</th>
+                            <th>Balance</th>
+                            <th>Last Activity</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var a in Model)
+                            {
+                                <tr>
+                                    <td class="font-monospace fw-bold text-primary">@a.AccountNumber</td>
+                                    <td class="fw-bold">@a.CustomerName</td>
+                                    <td>@a.AccountTypeName</td>
+                                    <td class="fw-bold">&#8377;@a.Balance.ToString("N2")</td>
+                                    <td class="small text-muted">@a.LastActivityDate.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        <span class="badge @(a.Status == "Active" ? "bg-success" : (a.Status == "Frozen" ? "bg-danger" : "bg-warning text-dark"))">
+                                            @a.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (a.Status != "Active")
+                                        {
+                                            <form asp-action="UpdateAccountStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="accountId" value="@a.AccountId" />
+                                                <input type="hidden" name="newStatus" value="Active" />
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    <i class="bi bi-unlock-fill me-1"></i> Unfreeze & Activate
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="UpdateAccountStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="accountId" value="@a.AccountId" />
+                                                <input type="hidden" name="newStatus" value="Frozen" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-lock-fill me-1"></i> Freeze
+                                                </button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="7" class="text-center py-5 text-muted">No inactive or frozen accounts found.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
