@@ -1,0 +1,53 @@
+@model List<Account>
+@{
+    ViewData["Title"] = "My Bank Accounts";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">My Bank Accounts</h2>
+            <p class="text-muted small">Overview of Savings, Current, and Salary accounts with real-time balances</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Deposit" class="btn btn-outline-primary"><i class="bi bi-cash-stack me-1"></i> Deposit Money</a>
+            <a asp-action="Withdraw" class="btn btn-outline-danger"><i class="bi bi-wallet2 me-1"></i> ATM Withdrawal</a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var acc in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-primary-subtle text-primary fs-6">@acc.AccountTypeName</span>
+                        <span class="badge @(acc.Status == "Active" ? "bg-success" : "bg-warning text-dark")">@acc.Status</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">Account Number</small>
+                        <div class="font-monospace fw-bold fs-5 text-dark">@acc.AccountNumber</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">Available Balance</small>
+                        <div class="display-6 fw-bold text-primary font-monospace">&#8377;@acc.Balance.ToString("N2")</div>
+                    </div>
+
+                    <ul class="list-unstyled small text-muted mb-4">
+                        <li><strong>IFSC Code:</strong> @acc.IFSCCode</li>
+                        <li><strong>Branch:</strong> @acc.BranchName</li>
+                        <li><strong>Opened Date:</strong> @acc.OpenedDate.ToString("dd MMM yyyy")</li>
+                    </ul>
+
+                    <div class="d-grid gap-2 mt-auto">
+                        <a asp-action="Passbook" asp-route-id="@acc.AccountId" class="btn btn-btb-primary btn-sm">
+                            <i class="bi bi-journal-bookmark me-1"></i> View Passbook & Statement
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
