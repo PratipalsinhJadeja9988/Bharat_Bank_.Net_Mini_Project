@@ -154,9 +154,10 @@
                 <!-- Accept Terms -->
                 <div class="col-12">
                     <div class="form-check">
-                        <input asp-for="AcceptTerms" class="form-check-input" required />
+                        <input asp-for="AcceptTerms" class="form-check-input" id="AcceptTerms" />
                         <label asp-for="AcceptTerms" class="form-check-label small" style="color:var(--color-on-surface-secondary);">
-                            I declare that the information provided is accurate and agree to BharatBank's <a asp-controller="Home" asp-action="Terms" target="_blank">Terms &amp; Conditions</a>.
+                            I declare that the information provided is accurate and agree to BharatBank's 
+                            <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#termsModal" onclick="event.stopPropagation();" style="color:var(--color-accent, #60a5fa); text-decoration:underline; font-weight:600;">Terms &amp; Conditions</a>.
                         </label>
                     </div>
                     <span asp-validation-for="AcceptTerms" class="text-danger small"></span>
@@ -173,6 +174,90 @@
     </div>
 </div>
 
+<!-- Terms & Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="background:var(--color-surface, #1e222d); color:var(--color-on-surface, #ffffff); border:1px solid var(--color-border, rgba(255,255,255,0.1));">
+            <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="p-2 rounded-3 fs-4" style="background:rgba(96,165,250,0.15); color:#60a5fa;">
+                        <i class="bi bi-file-earmark-lock2-fill"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0" id="termsModalLabel">Terms &amp; Conditions</h5>
+                        <small style="color:var(--color-on-surface-secondary, #94a3b8);">BharatBank Academic Simulation User Agreement</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <!-- Academic Disclaimer -->
+                <div class="p-3 rounded-3 d-flex align-items-start gap-3 mb-3" style="background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.25);">
+                    <i class="bi bi-shield-exclamation fs-4" style="color:var(--color-gold, #f59e0b);"></i>
+                    <div>
+                        <strong class="d-block mb-1">Mandatory Project Disclaimer:</strong>
+                        <p class="mb-0 small" style="color:var(--color-on-surface-secondary, #94a3b8); line-height:1.6;">
+                            "This application is an academic banking simulation developed for educational purposes.
+                            It does not process real financial transactions or connect to real banking infrastructure."
+                        </p>
+                    </div>
+                </div>
+
+                <div class="p-3 rounded-3" style="max-height:260px; overflow-y:auto; font-size:0.875rem; line-height:1.7; background:rgba(0,0,0,0.2); border:1px solid var(--color-border, rgba(255,255,255,0.08));">
+                    <h6 class="fw-bold mb-1">1. Academic Use and Simulation Nature</h6>
+                    <p class="text-secondary mb-3">BharatBank is developed solely for academic coursework, practical examination, and viva demonstration. All account balances, transactions, and services are purely simulated.</p>
+
+                    <h6 class="fw-bold mb-1">2. No Real Monetary Processing</h6>
+                    <p class="text-secondary mb-3">Under no circumstances does this application interact with the Reserve Bank of India (RBI), Real Time Gross Settlement (RTGS), National Electronic Funds Transfer (NEFT), Unified Payments Interface (UPI), or any actual financial institution.</p>
+
+                    <h6 class="fw-bold mb-1">3. Simulated Security &amp; Confidentiality</h6>
+                    <p class="text-secondary mb-3">Demo credentials (such as username, passwords, simulated OTPs, PAN numbers, and Aadhaar numbers) are stored for local demonstration. Never enter real banking passwords or actual credit/debit card credentials.</p>
+
+                    <h6 class="fw-bold mb-1">4. Role-Based Access Control &amp; Auditing</h6>
+                    <p class="text-secondary mb-0">Users must adhere to the role assignments (Customer, Employee, Manager, Admin). Any unauthorized attempts are logged in the simulated Audit Log system.</p>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0 d-flex justify-content-between align-items-center">
+                <a asp-controller="Home" asp-action="Terms" target="_blank" class="small text-decoration-none" style="color:var(--color-accent, #60a5fa);">
+                    <i class="bi bi-box-arrow-up-right me-1"></i> Open full terms in new tab
+                </a>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-btb-gold btn-sm px-4 fw-bold" id="btnModalAcceptTerms">
+                        <i class="bi bi-check2-circle me-1"></i> I Agree &amp; Accept
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            // Register unobtrusive validator for MustBeTrue
+            if ($.validator && $.validator.unobtrusive) {
+                $.validator.addMethod("mustbetrue", function (value, element) {
+                    return $(element).is(":checked");
+                }, "You must accept Terms and Conditions to register");
+                $.validator.unobtrusive.adapters.addBool("mustbetrue");
+            }
+
+            // Immediately re-validate when checkbox state changes
+            $('#AcceptTerms').on('change', function () {
+                $(this).valid();
+            });
+
+            // Modal 'I Agree & Accept' button
+            $('#btnModalAcceptTerms').on('click', function () {
+                var chk = $('#AcceptTerms');
+                chk.prop('checked', true);
+                chk.valid();
+                var modalEl = document.getElementById('termsModal');
+                var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                modal.hide();
+            });
+        });
+    </script>
 }

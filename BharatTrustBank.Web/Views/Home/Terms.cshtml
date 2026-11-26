@@ -62,9 +62,14 @@
                     <a asp-controller="Home" asp-action="Summary" class="btn btn-outline-secondary px-3">
                         <i class="bi bi-arrow-left me-1"></i> Back to Summary
                     </a>
-                    <button type="submit" id="btnContinue" class="btn btn-btb-primary px-4 py-2 fw-bold shadow" disabled>
-                        Accept &amp; Continue to Login <i class="bi bi-arrow-right ms-1"></i>
-                    </button>
+                    <div class="d-flex gap-2">
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-outline-warning px-3">
+                            <i class="bi bi-person-plus me-1"></i> Return to Registration
+                        </a>
+                        <button type="submit" id="btnContinue" class="btn btn-btb-primary px-4 py-2 fw-bold shadow" disabled>
+                            Accept &amp; Continue to Login <i class="bi bi-arrow-right ms-1"></i>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>

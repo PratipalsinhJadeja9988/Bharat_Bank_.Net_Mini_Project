@@ -1,9 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace BharatTrustBank.Web.Models
 {
+    public class MustBeTrueAttribute : ValidationAttribute, IClientModelValidator
+    {
+        public override bool IsValid(object? value)
+        {
+            return value is bool b && b;
+        }
+
+        public void AddValidation(ClientModelValidationContext context)
+        {
+            context.Attributes.TryAdd("data-val", "true");
+            context.Attributes.TryAdd("data-val-mustbetrue", ErrorMessageString);
+        }
+    }
     public class LoginViewModel
     {
         [Required(ErrorMessage = "Username or Email is required")]
@@ -87,7 +101,7 @@ namespace BharatTrustBank.Web.Models
         [Display(Name = "Confirm Password")]
         public string ConfirmPassword { get; set; } = string.Empty;
 
-        [Range(typeof(bool), "true", "true", ErrorMessage = "You must accept Terms and Conditions to register")]
+        [MustBeTrue(ErrorMessage = "You must accept Terms and Conditions to register")]
         public bool AcceptTerms { get; set; }
 
         public string? NomineeName { get; set; }
