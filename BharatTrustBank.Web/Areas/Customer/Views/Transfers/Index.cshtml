@@ -1,0 +1,140 @@
+@model TransferViewModel
+@{
+    ViewData["Title"] = "Fund Transfer";
+}
+
+<div class="container my-5" style="max-width: 850px;">
+    <div class="card shadow p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="p-3 bg-primary text-white rounded-3 fs-3">
+                    <i class="bi bi-send-check-fill"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0">Fund Transfer</h3>
+                    <small class="text-muted">Instant 24x7 IMPS, NEFT, RTGS & UPI Transfers with Simulated OTP</small>
+                </div>
+            </div>
+            <a asp-action="Beneficiaries" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-person-lines-fill me-1"></i> Manage Beneficiaries
+            </a>
+        </div>
+
+        <form asp-action="Index" method="post" id="transferForm">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small shadow-sm mb-3"></div>
+
+            <div class="row g-3">
+                <!-- From Account -->
+                <div class="col-md-6">
+                    <label asp-for="FromAccountId" class="form-label fw-bold small"></label>
+                    <select asp-for="FromAccountId" class="form-select">
+                        @foreach (var acc in Model.AvailableAccounts)
+                        {
+                            <option value="@acc.AccountId">@acc.AccountNumber - @acc.AccountTypeName (Bal: &#8377;@acc.Balance.ToString("N2"))</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Transfer Type -->
+                <div class="col-md-6">
+                    <label asp-for="TransferType" class="form-label fw-bold small"></label>
+                    <select asp-for="TransferType" class="form-select">
+                        <option value="IMPS">IMPS (Instant 24x7 &bull; Real-time Settlement)</option>
+                        <option value="NEFT">NEFT (National Electronic Fund Transfer)</option>
+                        <option value="RTGS">RTGS (Real Time Gross Settlement &bull; Min 2 Lakhs)</option>
+                        <option value="UPI">UPI (Unified Payments Interface / VPA)</option>
+                    </select>
+                </div>
+
+                <!-- Saved Beneficiaries Quick Select -->
+                @if (Model.SavedBeneficiaries.Any())
+                {
+                    <div class="col-12">
+                        <label class="form-label fw-bold small text-primary"><i class="bi bi-bookmark-star-fill me-1"></i> Quick Select Saved Beneficiary</label>
+                        <select class="form-select" id="ddlQuickBeneficiary" onchange="populateBeneficiary(this)">
+                            <option value="">-- Choose from Saved Beneficiaries --</option>
+                            @foreach (var b in Model.SavedBeneficiaries)
+                            {
+                                <option value="@b.AccountNumber" data-name="@b.BeneficiaryName" data-ifsc="@b.IFSCCode" data-type="@b.TransferType">
+                                    @b.BeneficiaryName - @b.BankName (A/C: @b.AccountNumber)
+                                </option>
+                            }
+                        </select>
+                    </div>
+                }
+
+                <!-- Beneficiary Name -->
+                <div class="col-md-6">
+                    <label asp-for="BeneficiaryName" class="form-label fw-bold small"></label>
+                    <input asp-for="BeneficiaryName" id="txtBenName" class="form-control" placeholder="Beneficiary Full Name" required />
+                    <span asp-validation-for="BeneficiaryName" class="text-danger small"></span>
+                </div>
+
+                <!-- Destination Account / UPI -->
+                <div class="col-md-6">
+                    <label asp-for="DestinationAccount" class="form-label fw-bold small"></label>
+                    <input asp-for="DestinationAccount" id="txtDestAccount" class="form-control font-monospace" placeholder="A/C Number or VPA (e.g. name@okhdfc)" required />
+                    <span asp-validation-for="DestinationAccount" class="text-danger small"></span>
+                </div>
+
+                <!-- IFSC Code -->
+                <div class="col-md-6">
+                    <label asp-for="IFSCCode" class="form-label fw-bold small"></label>
+                    <input asp-for="IFSCCode" id="txtIFSC" class="form-control text-uppercase" placeholder="e.g. BHTT0001001" />
+                </div>
+
+                <!-- Transfer Amount -->
+                <div class="col-md-6">
+                    <label asp-for="Amount" class="form-label fw-bold small"></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">&#8377;</span>
+                        <input asp-for="Amount" class="form-control form-control-lg fs-5 fw-bold" placeholder="5000.00" required />
+                    </div>
+                    <span asp-validation-for="Amount" class="text-danger small"></span>
+                </div>
+
+                <!-- Description / Purpose -->
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label fw-bold small"></label>
+                    <input asp-for="Description" class="form-control" placeholder="e.g. Monthly Rent Payment" required />
+                </div>
+
+                <!-- Simulated OTP Confirmation -->
+                <div class="col-12 p-3 bg-light rounded-3 border">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="form-label fw-bold small mb-0 text-dark">
+                            <i class="bi bi-shield-lock-fill text-success me-1"></i> Simulated 2-Factor Transaction OTP
+                        </label>
+                        <span class="badge bg-success">Simulated OTP: 123456</span>
+                    </div>
+                    <div class="input-group" style="max-width: 320px;">
+                        <input asp-for="OTP" class="form-control text-center fw-bold fs-5 font-monospace" value="123456" placeholder="123456" maxlength="6" required />
+                        <button type="button" class="btn btn-outline-secondary" onclick="alert('Simulated SMS OTP sent: 123456')">Resend OTP</button>
+                    </div>
+                    <span asp-validation-for="OTP" class="text-danger small"></span>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="col-12 mt-4 text-center">
+                    <button type="submit" class="btn btn-btb-primary btn-lg px-5 fw-bold shadow-sm">
+                        <i class="bi bi-send-fill me-2"></i> Confirm & Authorize Transfer
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function populateBeneficiary(select) {
+            const opt = select.options[select.selectedIndex];
+            if (opt && opt.value) {
+                document.getElementById('txtDestAccount').value = opt.value;
+                document.getElementById('txtBenName').value = opt.getAttribute('data-name');
+                document.getElementById('txtIFSC').value = opt.getAttribute('data-ifsc');
+            }
+        }
+    </script>
+}
