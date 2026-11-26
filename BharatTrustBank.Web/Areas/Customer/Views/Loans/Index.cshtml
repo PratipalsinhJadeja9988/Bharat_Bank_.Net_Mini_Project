@@ -1,0 +1,158 @@
+@model LoanApplyViewModel
+@{
+    ViewData["Title"] = "Loans & EMI Calculator";
+}
+
+<div class="container my-5" style="max-width: 950px;">
+    <div class="row g-4">
+        <!-- Loan Application & EMI Calculator -->
+        <div class="col-lg-6">
+            <div class="card shadow p-4 h-100">
+                <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-4">
+                    <div class="p-3 bg-success-subtle text-success rounded-3 fs-3">
+                        <i class="bi bi-cash-coin"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">Apply for a Loan</h4>
+                        <small class="text-muted">Instant pre-approved rates from 8.25% p.a.</small>
+                    </div>
+                </div>
+
+                <form asp-action="Apply" method="post" id="loanForm">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small shadow-sm mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="LoanType" class="form-label fw-bold small"></label>
+                        <select asp-for="LoanType" id="loanTypeSelect" class="form-select" onchange="recalcLoan()">
+                            <option value="Personal Loan">Personal Loan (10.75% p.a.)</option>
+                            <option value="Home Loan">Home Loan (8.50% p.a.)</option>
+                            <option value="Vehicle Loan">Vehicle Loan (8.90% p.a.)</option>
+                            <option value="Education Loan">Education Loan (9.25% p.a.)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="LoanAmount" class="form-label fw-bold small"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">&#8377;</span>
+                            <input asp-for="LoanAmount" id="loanAmount" class="form-control fw-bold" placeholder="200000" oninput="recalcLoan()" required />
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="TenureMonths" class="form-label fw-bold small"></label>
+                            <input asp-for="TenureMonths" id="loanTenure" class="form-control" placeholder="24" oninput="recalcLoan()" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="MonthlyIncome" class="form-label fw-bold small"></label>
+                            <input asp-for="MonthlyIncome" class="form-control" placeholder="60000" required />
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="EmploymentType" class="form-label fw-bold small"></label>
+                            <select asp-for="EmploymentType" class="form-select">
+                                <option value="Salaried">Salaried Employee</option>
+                                <option value="Self-Employed">Self-Employed Professional</option>
+                                <option value="Business">Business Owner</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Purpose" class="form-label fw-bold small"></label>
+                            <input asp-for="Purpose" class="form-control" placeholder="e.g. Home Renovation" required />
+                        </div>
+                    </div>
+
+                    <!-- EMI Calculation Projection Box -->
+                    <div class="p-3 bg-light rounded-3 border mb-4">
+                        <div class="d-flex justify-content-between mb-1 small text-muted">
+                            <span>Estimated Monthly EMI:</span>
+                            <strong id="dispEMI" class="text-primary fs-5 font-monospace">&#8377;9,298.00</strong>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted">
+                            <span>Total Repayment (P + I):</span>
+                            <strong id="dispTotalRepay" class="text-dark">&#8377;2,23,152.00</strong>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-btb-primary w-100 fw-bold py-2 shadow-sm">
+                        <i class="bi bi-send-fill me-1"></i> Submit Loan Application
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Existing Loans List & Status -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-list-check text-primary me-2"></i> My Loan Applications</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bank table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Loan Category</th>
+                                    <th>Amount</th>
+                                    <th>EMI</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ExistingLoans.Any())
+                                {
+                                    @foreach (var l in Model.ExistingLoans)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@l.LoanType</strong><br />
+                                                <small class="text-muted">LOAN-#@l.LoanId &bull; @l.TenureMonths Mos</small>
+                                            </td>
+                                            <td class="fw-bold">&#8377;@l.LoanAmount.ToString("N0")</td>
+                                            <td class="text-primary fw-semibold">&#8377;@l.MonthlyEMI.ToString("N0")/mo</td>
+                                            <td>
+                                                <span class="badge @(l.Status == "Active" || l.Status == "Approved" ? "bg-success" : (l.Status == "Rejected" ? "bg-danger" : "bg-warning text-dark"))">
+                                                    @l.Status
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="4" class="text-center py-4 text-muted">No loan applications found.</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function recalcLoan() {
+            const p = parseFloat(document.getElementById('loanAmount').value) || 0;
+            const n = parseInt(document.getElementById('loanTenure').value) || 12;
+            const type = document.getElementById('loanTypeSelect').value;
+
+            let rate = type === "Home Loan" ? 8.50 : (type === "Vehicle Loan" ? 8.90 : (type === "Education Loan" ? 9.25 : 10.75));
+            const r = (rate / 1200);
+
+            let emi = 0;
+            if (p > 0 && n > 0 && r > 0) {
+                emi = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+            }
+            const totalRepay = emi * n;
+
+            document.getElementById('dispEMI').innerText = '₹' + emi.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+            document.getElementById('dispTotalRepay').innerText = '₹' + totalRepay.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+        }
+        recalcLoan();
+    </script>
+}
