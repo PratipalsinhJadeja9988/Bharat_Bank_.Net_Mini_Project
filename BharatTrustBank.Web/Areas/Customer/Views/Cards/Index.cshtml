@@ -1,0 +1,526 @@
+@model List<DebitCard>
+@{
+    ViewData["Title"] = "Card Management Center";
+    var creditCards = ViewBag.CreditCards as List<CreditCard> ?? new List<CreditCard>();
+}
+
+<div class="container my-4" style="max-width: 1050px;">
+    <!-- Page Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold brand-font text-white mb-1">
+                <i class="bi bi-credit-card-2-front text-primary me-2"></i> Card Management Center
+            </h2>
+            <p class="text-secondary small mb-0">Manage Debit &amp; Credit Cards, customize daily limits, reset ATM PIN, and toggle freeze security</p>
+        </div>
+        <div class="d-flex gap-2">
+            <span class="badge bg-dark border border-secondary text-light px-3 py-2 d-flex align-items-center gap-2">
+                <i class="bi bi-shield-check text-success"></i> Real-time EMV Chip &amp; 3D Secure Protection
+            </span>
+        </div>
+    </div>
+
+    <!-- Flash Notifications -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill text-success fs-5"></i>
+            <div>@TempData["SuccessMessage"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+            <div>@TempData["ErrorMessage"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- DEBIT CARDS SECTION -->
+    <div class="mb-5">
+        <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+            <i class="bi bi-credit-card-fill text-primary fs-5"></i>
+            <h4 class="fw-bold text-white mb-0">Debit Cards</h4>
+            <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-25 ms-2">@Model.Count Active</span>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="glass-card p-4 text-center text-muted">
+                <i class="bi bi-credit-card fs-1 d-block mb-2 text-secondary"></i>
+                <p class="mb-0">No active debit cards found for this account.</p>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var card in Model)
+                {
+                    var cardDomId = "card_debit_" + card.DebitCardId;
+                    <div class="col-lg-6">
+                        <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                            <!-- Card Section Header (Matching Reference Photo) -->
+                            <div class="interactive-card-header mb-3">
+                                <span class="interactive-card-title">
+                                    <i class="bi bi-credit-card-2-front text-primary"></i> INTERACTIVE 3D CARD
+                                </span>
+                                <button type="button" class="btn-flip-trigger" onclick="toggleCardFlip('@cardDomId')">
+                                    <i class="bi bi-arrow-repeat text-primary me-1"></i> Click to Flip
+                                </button>
+                            </div>
+
+                            <!-- Interactive 3D Card Visual -->
+                            <div class="card-3d-container mb-4" id="@cardDomId" onclick="toggleCardFlip('@cardDomId')">
+                                <div class="card-3d-flipper">
+                                    <!-- Card Front Face -->
+                                    <div class="card-3d-face card-3d-front @(card.Status == "Blocked" ? "card-blocked" : "")">
+                                        <!-- Top Row: Bank Logo & Card Type Pill -->
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold brand-font text-white fs-4 letter-spacing-1">BharatBank</span>
+                                            <span class="card-type-pill">@card.CardType</span>
+                                        </div>
+
+                                        <!-- EMV Gold Chip -->
+                                        <div class="card-chip-3d my-2"></div>
+
+                                        <!-- 16-Digit Card Number Display -->
+                                        <div class="card-number-3d">@card.CardNumber</div>
+
+                                        <!-- Bottom Row: Card Holder & Expiry Date -->
+                                        <div class="d-flex justify-content-between align-items-end">
+                                            <div>
+                                                <div class="card-label-dim">CARD HOLDER</div>
+                                                <div class="card-value-bold text-uppercase">@card.CardHolderName</div>
+                                            </div>
+                                            <div class="text-end">
+                                                <div class="card-label-dim">EXPIRES</div>
+                                                <div class="card-value-bold font-monospace">@card.ExpiryDate</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Card Back Face -->
+                                    <div class="card-3d-face card-3d-back">
+                                        <div class="magnetic-strip"></div>
+                                        <div class="signature-bar my-2">
+                                            <span style="font-size: 0.7rem; letter-spacing: 0.5px;">AUTHORIZED SIGNATURE</span>
+                                            <span class="fw-bold text-danger font-monospace">CVV: @card.CVV</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center small text-white-50 px-1 mt-auto">
+                                            <span style="font-size: 0.68rem;">Linked A/C: @card.AccountNumber</span>
+                                            <span class="badge @(card.Status == "Active" ? "bg-success" : "bg-danger") font-monospace">@card.Status</span>
+                                        </div>
+                                        <div class="text-white-50 small mt-2" style="font-size: 0.65rem; line-height: 1.3;">
+                                            This card is issued by BharatBank for academic simulation. 24x7 Helpline: 1800-200-8899.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Management Controls & Forms -->
+                            <div class="card-control-panel p-3 rounded-3 mt-auto">
+                                <!-- Status & Freeze Action Row -->
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                                    <div>
+                                        <span class="text-secondary small d-block">Status</span>
+                                        <span class="badge @(card.Status == "Active" ? "bg-success text-dark" : "bg-danger") font-monospace">
+                                            <i class="bi @(card.Status == "Active" ? "bi-check-circle" : "bi-slash-circle") me-1"></i> @card.Status
+                                        </span>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="text-secondary small d-block">Daily Limit</span>
+                                        <strong class="text-warning font-monospace">&#8377;@card.DailyLimit.ToString("N0")</strong>
+                                    </div>
+                                    <div>
+                                        <form asp-action="ToggleStatus" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="cardId" value="@card.DebitCardId" />
+                                            <input type="hidden" name="cardCategory" value="Debit" />
+                                            <input type="hidden" name="currentStatus" value="@card.Status" />
+                                            <button type="submit" class="btn btn-sm @(card.Status == "Active" ? "btn-outline-danger" : "btn-outline-success") px-3">
+                                                <i class="bi @(card.Status == "Active" ? "bi-lock-fill" : "bi-unlock-fill") me-1"></i>
+                                                @(card.Status == "Active" ? "Freeze Card" : "Unfreeze Card")
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- Limit Adjustment Form -->
+                                <form asp-action="UpdateLimit" method="post" class="row g-2 mb-3">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="cardId" value="@card.DebitCardId" />
+                                    <input type="hidden" name="cardCategory" value="Debit" />
+                                    <div class="col-8">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-dark border-secondary text-secondary">&#8377;</span>
+                                            <input type="number" name="limit" class="form-control form-control-sm bg-dark text-white border-secondary" value="@card.DailyLimit" placeholder="New Daily Limit" min="1000" max="500000" step="1000" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary w-100">Set Limit</button>
+                                    </div>
+                                </form>
+
+                                <!-- PIN Reset Form -->
+                                <form asp-action="ChangePIN" method="post" class="row g-2">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="cardId" value="@card.DebitCardId" />
+                                    <input type="hidden" name="cardCategory" value="Debit" />
+                                    <div class="col-8">
+                                        <input type="password" name="newPin" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="New 4-Digit PIN" maxlength="4" pattern="\d{4}" title="Please enter a 4-digit numeric PIN" required />
+                                    </div>
+                                    <div class="col-4">
+                                        <button type="submit" class="btn btn-sm btn-outline-warning w-100">Change PIN</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- CREDIT CARDS SECTION -->
+    <div class="mb-4">
+        <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+            <i class="bi bi-credit-card-2-front-fill text-warning fs-5"></i>
+            <h4 class="fw-bold text-white mb-0">Credit Cards</h4>
+            <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-25 ms-2">@creditCards.Count Active</span>
+        </div>
+
+        @if (!creditCards.Any())
+        {
+            <div class="glass-card p-4 text-center text-muted">
+                <i class="bi bi-credit-card-2-back fs-1 d-block mb-2 text-secondary"></i>
+                <p class="mb-0">No active credit cards issued. You can apply for a pre-approved Credit Card from the Offers section.</p>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var cc in creditCards)
+                {
+                    var ccDomId = "card_credit_" + cc.CreditCardId;
+                    <div class="col-lg-6">
+                        <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                            <!-- Card Header (Matching Reference Photo) -->
+                            <div class="interactive-card-header mb-3">
+                                <span class="interactive-card-title">
+                                    <i class="bi bi-credit-card-2-front text-warning"></i> INTERACTIVE 3D CARD
+                                </span>
+                                <button type="button" class="btn-flip-trigger" onclick="toggleCardFlip('@ccDomId')">
+                                    <i class="bi bi-arrow-repeat text-warning me-1"></i> Click to Flip
+                                </button>
+                            </div>
+
+                            <!-- Interactive 3D Credit Card Visual -->
+                            <div class="card-3d-container mb-4" id="@ccDomId" onclick="toggleCardFlip('@ccDomId')">
+                                <div class="card-3d-flipper">
+                                    <!-- Card Front Face -->
+                                    <div class="card-3d-face card-3d-front credit-card-theme @(cc.Status == "Blocked" ? "card-blocked" : "")">
+                                        <!-- Top Row: Bank Logo & Card Type Pill -->
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold brand-font text-white fs-4 letter-spacing-1">BharatBank</span>
+                                            <span class="card-type-pill" style="border-color: rgba(255, 215, 0, 0.6); background: rgba(255, 215, 0, 0.15); color: #ffd700;">@cc.CardType</span>
+                                        </div>
+
+                                        <!-- EMV Gold Chip -->
+                                        <div class="card-chip-3d my-2"></div>
+
+                                        <!-- 16-Digit Card Number Display -->
+                                        <div class="card-number-3d">@cc.CardNumber</div>
+
+                                        <!-- Bottom Row: Card Holder & Expiry Date -->
+                                        <div class="d-flex justify-content-between align-items-end">
+                                            <div>
+                                                <div class="card-label-dim">CARD HOLDER</div>
+                                                <div class="card-value-bold text-uppercase">@cc.CardHolderName</div>
+                                            </div>
+                                            <div class="text-end">
+                                                <div class="card-label-dim">EXPIRES</div>
+                                                <div class="card-value-bold font-monospace">@cc.ExpiryDate</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Card Back Face -->
+                                    <div class="card-3d-face card-3d-back" style="background: linear-gradient(145deg, #100824 0%, #1e0f42 100%);">
+                                        <div class="magnetic-strip"></div>
+                                        <div class="signature-bar my-2">
+                                            <span style="font-size: 0.7rem; letter-spacing: 0.5px;">AUTHORIZED SIGNATURE</span>
+                                            <span class="fw-bold text-danger font-monospace">CVV: @cc.CVV</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center small text-white-50 px-1 mt-auto">
+                                            <span style="font-size: 0.68rem;">Billing Cycle: @cc.BillingCycleDay th of month</span>
+                                            <span class="badge @(cc.Status == "Active" ? "bg-warning text-dark" : "bg-danger") font-monospace">@cc.Status</span>
+                                        </div>
+                                        <div class="text-white-50 small mt-2" style="font-size: 0.65rem; line-height: 1.3;">
+                                            BharatTrust Regalia Academic Simulation Card. 24x7 Helpline: 1800-200-8899.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Credit Card Details Panel -->
+                            <div class="card-control-panel p-3 rounded-3 mt-auto">
+                                <div class="row g-3 text-center mb-3">
+                                    <div class="col-4 border-end border-secondary border-opacity-25">
+                                        <span class="text-secondary small d-block" style="font-size: 0.72rem;">Available Limit</span>
+                                        <strong class="text-success font-monospace" style="font-size: 0.95rem;">&#8377;@cc.AvailableLimit.ToString("N0")</strong>
+                                    </div>
+                                    <div class="col-4 border-end border-secondary border-opacity-25">
+                                        <span class="text-secondary small d-block" style="font-size: 0.72rem;">Total Credit</span>
+                                        <strong class="text-white font-monospace" style="font-size: 0.95rem;">&#8377;@cc.CreditLimit.ToString("N0")</strong>
+                                    </div>
+                                    <div class="col-4">
+                                        <span class="text-secondary small d-block" style="font-size: 0.72rem;">Reward Points</span>
+                                        <strong class="text-warning font-monospace" style="font-size: 0.95rem;">@cc.RewardPoints pts</strong>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25">
+                                    <span class="badge bg-light bg-opacity-10 text-light border border-secondary border-opacity-25">
+                                        <i class="bi bi-calendar-event me-1"></i> Bill Cycle: @cc.BillingCycleDay th
+                                    </span>
+                                    <form asp-action="ToggleStatus" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="cardId" value="@cc.CreditCardId" />
+                                        <input type="hidden" name="cardCategory" value="Credit" />
+                                        <input type="hidden" name="currentStatus" value="@cc.Status" />
+                                        <button type="submit" class="btn btn-sm @(cc.Status == "Active" ? "btn-outline-danger" : "btn-outline-success") px-3">
+                                            <i class="bi @(cc.Status == "Active" ? "bi-lock-fill" : "bi-unlock-fill") me-1"></i>
+                                            @(cc.Status == "Active" ? "Freeze Card" : "Unfreeze Card")
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    /* Card Styles & Scoped Overrides */
+    .glass-card {
+        background: rgba(10, 15, 25, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-control-panel {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .interactive-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .interactive-card-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        color: #8faec9;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .btn-flip-trigger {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #f2e8d5;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 4px 12px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-flip-trigger:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+        border-color: rgba(255, 215, 0, 0.4);
+        transform: translateY(-1px);
+    }
+
+    /* 3D Container & Flipper */
+    .card-3d-container {
+        perspective: 1200px;
+        width: 100%;
+        max-width: 440px;
+        height: 250px;
+        margin: 0 auto;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .card-3d-flipper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 30px rgba(13, 40, 77, 0.35);
+    }
+
+    .card-3d-container.is-flipped .card-3d-flipper {
+        transform: rotateY(180deg);
+    }
+
+    .card-3d-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        border-radius: 20px;
+        padding: 1.5rem 1.8rem;
+        color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    /* Card Front Theme: Deep Navy & Electric Blue */
+    .card-3d-front {
+        background: linear-gradient(145deg, #03152d 0%, #0a254d 50%, #153e77 100%);
+    }
+
+    /* Card Front Theme: Credit Card Purple/Sapphire */
+    .card-3d-front.credit-card-theme {
+        background: linear-gradient(145deg, #180d38 0%, #2e1866 50%, #43228c 100%);
+        border: 1px solid rgba(255, 215, 0, 0.25);
+    }
+
+    .card-3d-front.card-blocked {
+        filter: grayscale(0.85) contrast(0.85);
+    }
+
+    .card-3d-front::after, .card-3d-back::after {
+        content: '';
+        position: absolute;
+        top: -40%;
+        right: -25%;
+        width: 280px;
+        height: 280px;
+        background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    /* Card Back Theme */
+    .card-3d-back {
+        background: linear-gradient(145deg, #020e1a 0%, #0a2240 100%);
+        transform: rotateY(180deg);
+    }
+
+    .card-3d-back .magnetic-strip {
+        background: #000000;
+        height: 40px;
+        margin: -0.4rem -1.8rem 0.6rem -1.8rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .card-3d-back .signature-bar {
+        background: #f8fafc;
+        color: #0f172a;
+        font-family: monospace;
+        font-size: 0.82rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Pill Badge */
+    .card-type-pill {
+        border: 1px solid rgba(255, 215, 0, 0.45);
+        color: #ffd700;
+        background: rgba(255, 215, 0, 0.08);
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.78rem;
+        padding: 4px 14px;
+        letter-spacing: 0.3px;
+        backdrop-filter: blur(8px);
+    }
+
+    /* Gold Chip */
+    .card-chip-3d {
+        width: 48px;
+        height: 35px;
+        background: linear-gradient(135deg, #fce07a 0%, #d49514 50%, #945304 100%);
+        border-radius: 8px;
+        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.7), 0 3px 6px rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(148, 83, 4, 0.5);
+        position: relative;
+    }
+
+    .card-chip-3d::after {
+        content: '';
+        position: absolute;
+        inset: 4px;
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        border-radius: 4px;
+        background: repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0,0,0,0.15) 8px, rgba(0,0,0,0.15) 9px);
+    }
+
+    /* Card Number */
+    .card-number-3d {
+        font-family: 'Outfit', 'Courier New', monospace;
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: 3.2px;
+        color: #ffffff;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+        margin: 0.3rem 0;
+    }
+
+    /* Labels & Values */
+    .card-label-dim {
+        font-size: 0.65rem;
+        color: #8faec9;
+        font-weight: 600;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }
+
+    .card-value-bold {
+        font-size: 0.98rem;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: 0.8px;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        function toggleCardFlip(elementId) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.classList.toggle('is-flipped');
+            }
+        }
+    </script>
+}
