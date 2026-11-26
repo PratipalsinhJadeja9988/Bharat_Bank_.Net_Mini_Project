@@ -1,0 +1,248 @@
+@model SpendingInsightsViewModel
+@{
+    ViewData["Title"] = "Financial Analytics & Smart Insights";
+    var creditModel = ViewBag.CreditScoreModel as CreditScoreViewModel ?? new CreditScoreViewModel();
+    var loanModel = ViewBag.LoanEligibilityModel as LoanEligibilityViewModel ?? new LoanEligibilityViewModel();
+    string? creditRes = TempData["CreditScoreResult"] as string;
+    string? loanRes = TempData["LoanEligibilityResult"] as string;
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Financial Analytics & AI Smart Insights</h2>
+            <p class="text-muted small">Personalized financial health analysis, category expense distribution, credit score prediction, and loan capacity</p>
+        </div>
+    </div>
+
+    <!-- AI Personalized Financial Tip Banner -->
+    <div class="card border-primary bg-primary-subtle p-4 mb-4 shadow-sm">
+        <div class="d-flex align-items-start gap-3">
+            <div class="p-3 bg-primary text-white rounded-circle fs-3">
+                <i class="bi bi-lightbulb-fill"></i>
+            </div>
+            <div>
+                <h5 class="fw-bold text-primary mb-1">Smart Spending Insight</h5>
+                <p class="mb-0 text-dark">
+                    @Model.FinancialTip
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-5">
+        <!-- Monthly Spending Breakdown Donut Chart -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100 p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-pie-chart-fill text-primary me-2"></i> Category-wise Expense Breakdown</h5>
+                <div class="d-flex justify-content-center">
+                    <canvas id="categoryExpenseChart" style="max-height: 250px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Income vs Expense Bar Chart -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100 p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-line-fill text-success me-2"></i> Cash Flow & Savings Progress</h5>
+                <div class="d-flex justify-content-center">
+                    <canvas id="cashflowBarChart" style="max-height: 250px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive AI Tools Row: Simulated Credit Score & Loan Eligibility -->
+    <div class="row g-4">
+        <!-- Credit Score Prediction Simulator -->
+        <div class="col-lg-6">
+            <div class="card shadow p-4 h-100 border">
+                <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-4">
+                    <div class="p-3 bg-info-subtle text-info-emphasis rounded-3 fs-3">
+                        <i class="bi bi-speedometer"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">Simulated Credit Score</h4>
+                        <small class="text-muted">Academic rule-based financial credit score simulator (300 - 900)</small>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(creditRes))
+                {
+                    var parts = creditRes.Split('|');
+                    <div class="alert alert-success shadow-sm mb-4 border-success">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <small class="text-uppercase fw-bold text-success">Predicted Score</small>
+                                <div class="display-6 fw-bold text-dark">@parts[0] / 900</div>
+                            </div>
+                            <span class="badge bg-success fs-5 px-3 py-2">@parts[1]</span>
+                        </div>
+                        <small class="text-dark d-block mt-2">@parts[2]</small>
+                        <div class="mt-2 pt-2 border-top border-success-subtle">
+                            <span class="badge bg-warning text-dark"><i class="bi bi-info-circle me-1"></i> Academic prediction only – not an official credit score</span>
+                        </div>
+                    </div>
+                }
+
+                <form asp-action="CalculateCreditScore" method="post">
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Monthly Net Income (INR)</label>
+                            <input type="number" name="MonthlyIncome" class="form-control" value="75000" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Existing Monthly EMIs (INR)</label>
+                            <input type="number" name="ExistingEMIs" class="form-control" value="15000" required />
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Credit Card Limit</label>
+                            <input type="number" name="CreditCardLimit" class="form-control" value="100000" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Avg Monthly Card Spend</label>
+                            <input type="number" name="MonthlyCardUsage" class="form-control" value="25000" required />
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Years of Banking History</label>
+                            <input type="number" name="BankingHistoryYears" class="form-control" value="4" required />
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center">
+                            <div class="form-check mt-3">
+                                <input type="checkbox" name="HasPastDefault" value="true" class="form-check-input" id="chkDef" />
+                                <label class="form-check-label small fw-semibold" for="chkDef">Any Past Loan Default?</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-btb-primary w-100 fw-bold py-2">
+                        <i class="bi bi-cpu me-1"></i> Predict Credit Score
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Loan Eligibility Prediction Calculator -->
+        <div class="col-lg-6">
+            <div class="card shadow p-4 h-100 border">
+                <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-4">
+                    <div class="p-3 bg-success-subtle text-success rounded-3 fs-3">
+                        <i class="bi bi-calculator"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">Loan Capacity & Eligibility</h4>
+                        <small class="text-muted">Rule-based assessment of maximum borrowing capacity</small>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(loanRes))
+                {
+                    var parts = loanRes.Split('|');
+                    <div class="alert alert-info shadow-sm mb-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <small class="text-uppercase fw-bold text-primary">Eligibility Status</small>
+                                <div class="fs-4 fw-bold text-dark">@parts[0]</div>
+                            </div>
+                            <span class="badge bg-primary fs-6 px-3 py-2">Capacity: &#8377;@parts[1]</span>
+                        </div>
+                        <small class="text-dark d-block mt-2">@parts[2]</small>
+                    </div>
+                }
+
+                <form asp-action="CheckLoanEligibility" method="post">
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Loan Product</label>
+                            <select name="LoanType" class="form-select">
+                                <option value="Home Loan">Home Loan (8.50%)</option>
+                                <option value="Personal Loan">Personal Loan (10.75%)</option>
+                                <option value="Vehicle Loan">Vehicle Loan (8.90%)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Requested Amount (INR)</label>
+                            <input type="number" name="RequestedAmount" class="form-control" value="2500000" required />
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Monthly Net Income (INR)</label>
+                            <input type="number" name="MonthlyIncome" class="form-control" value="85000" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Existing Monthly EMIs (INR)</label>
+                            <input type="number" name="ExistingEMIs" class="form-control" value="10000" required />
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Tenure (Years)</label>
+                            <input type="number" name="TenureYears" class="form-control" value="15" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Credit Score</label>
+                            <input type="number" name="CreditScore" class="form-control" value="760" required />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-btb-gold w-100 fw-bold py-2">
+                        <i class="bi bi-graph-up-arrow me-1"></i> Check Loan Eligibility
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Category Expense Doughnut Chart
+            const catCtx = document.getElementById('categoryExpenseChart').getContext('2d');
+            new Chart(catCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Transfers', 'Utilities', 'Investment', 'Shopping', 'EMI'],
+                    datasets: [{
+                        data: [15000, 3249, 10000, 1751, 8500],
+                        backgroundColor: ['#0b2545', '#1d4ed8', '#10b981', '#f59e0b', '#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } }
+                }
+            });
+
+            // Cashflow Progress Bar Chart
+            const flowCtx = document.getElementById('cashflowBarChart').getContext('2d');
+            new Chart(flowCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Monthly Inflow', 'Monthly Outflow', 'Net Savings'],
+                    datasets: [{
+                        label: 'INR',
+                        data: [115000, 38500, 76500],
+                        backgroundColor: ['#0b2545', '#ef4444', '#10b981'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        });
+    </script>
+}
