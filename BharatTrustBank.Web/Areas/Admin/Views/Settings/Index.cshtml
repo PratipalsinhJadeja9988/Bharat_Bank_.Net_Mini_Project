@@ -1,0 +1,37 @@
+@model Dictionary<string, string>
+@{
+    ViewData["Title"] = "System Settings & Parameters";
+}
+
+<div class="container my-5" style="max-width: 800px;">
+    <div class="card shadow p-4 p-md-5">
+        <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-4">
+            <div class="p-3 bg-primary text-white rounded-3 fs-3">
+                <i class="bi bi-sliders"></i>
+            </div>
+            <div>
+                <h3 class="fw-bold mb-0">System Settings & Security Policies</h3>
+                <small class="text-muted">Global banking parameters, lockout thresholds, inactive account periods, and contact details</small>
+            </div>
+        </div>
+
+        <form asp-action="Update" method="post">
+            @foreach (var s in Model)
+            {
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-dark">@s.Key</label>
+                    <input type="text" name="settings[@s.Key]" class="form-control font-monospace" value="@s.Value" required />
+                </div>
+            }
+
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <a asp-action="Index" asp-controller="Dashboard" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                </a>
+                <button type="submit" class="btn btn-btb-primary px-4 fw-bold shadow-sm">
+                    <i class="bi bi-floppy-fill me-1"></i> Save Global Settings
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
