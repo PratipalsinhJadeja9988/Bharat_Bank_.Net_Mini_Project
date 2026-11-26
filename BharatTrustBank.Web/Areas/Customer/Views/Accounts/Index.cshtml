@@ -41,9 +41,12 @@
                         <li><strong>Opened Date:</strong> @acc.OpenedDate.ToString("dd MMM yyyy")</li>
                     </ul>
 
-                    <div class="d-grid gap-2 mt-auto">
-                        <a asp-action="Passbook" asp-route-id="@acc.AccountId" class="btn btn-btb-primary btn-sm">
-                            <i class="bi bi-journal-bookmark me-1"></i> View Passbook & Statement
+                    <div class="d-flex gap-2 mt-auto">
+                        <a asp-action="Details" asp-route-id="@acc.AccountId" class="btn btn-outline-primary btn-sm flex-fill">
+                            <i class="bi bi-info-circle me-1"></i> Details
+                        </a>
+                        <a asp-action="Passbook" asp-route-id="@acc.AccountId" class="btn btn-btb-primary btn-sm flex-fill">
+                            <i class="bi bi-journal-bookmark me-1"></i> Passbook
                         </a>
                     </div>
                 </div>

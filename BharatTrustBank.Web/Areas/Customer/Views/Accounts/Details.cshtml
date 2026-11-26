@@ -1,0 +1,143 @@
+@model Account
+@{
+    ViewData["Title"] = $"Account Details - {Model.AccountNumber}";
+    var transactions = ViewBag.Transactions as List<Transaction> ?? new List<Transaction>();
+}
+
+<div class="container my-5">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Account Details</h2>
+            <p class="text-muted small mb-0">Overview of account balance, profile parameters, and recent activity</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Accounts
+            </a>
+            <a asp-action="Passbook" asp-route-id="@Model.AccountId" class="btn btn-btb-primary">
+                <i class="bi bi-journal-bookmark me-1"></i> View Passbook
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Account Card -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+                    <div>
+                        <span class="badge bg-primary-subtle text-primary fs-6 me-2">@Model.AccountTypeName</span>
+                        <span class="badge @(Model.Status == "Active" ? "bg-success" : "bg-warning text-dark")">@Model.Status</span>
+                    </div>
+                    <div class="text-muted small">
+                        Opened on <strong>@Model.OpenedDate.ToString("dd MMM yyyy")</strong>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">Account Number</small>
+                        <div class="font-monospace fw-bold fs-4 text-dark">@Model.AccountNumber</div>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">Available Balance</small>
+                        <div class="display-6 fw-bold text-primary font-monospace">&#8377;@Model.Balance.ToString("N2")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">IFSC Code</small>
+                        <div class="font-monospace text-dark">@Model.IFSCCode</div>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">Branch Name</small>
+                        <div class="text-dark">@Model.BranchName</div>
+                    </div>
+                </div>
+
+                <hr class="my-3" />
+
+                <!-- Action Shortcut Buttons -->
+                <div class="d-flex flex-wrap gap-2 pt-2">
+                    <a asp-action="Deposit" class="btn btn-outline-success">
+                        <i class="bi bi-cash-stack me-1"></i> Deposit Money
+                    </a>
+                    <a asp-action="Withdraw" class="btn btn-outline-danger">
+                        <i class="bi bi-wallet2 me-1"></i> Withdraw Cash
+                    </a>
+                    <a asp-controller="Transfers" asp-action="Index" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left-right me-1"></i> Transfer Funds
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Summary Card -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border p-4 h-100 bg-light">
+                <h5 class="fw-bold text-dark mb-3">Account Security & Services</h5>
+                <ul class="list-unstyled small text-muted mb-4">
+                    <li class="mb-2"><i class="bi bi-shield-check text-success me-2"></i>2FA Transaction Protection</li>
+                    <li class="mb-2"><i class="bi bi-bell-fill text-warning me-2"></i>SMS & Email Alerts Enabled</li>
+                    <li class="mb-2"><i class="bi bi-credit-card-2-front text-primary me-2"></i>Debit Card Linked</li>
+                    <li class="mb-2"><i class="bi bi-file-earmark-text text-info me-2"></i>E-Statements Active</li>
+                </ul>
+
+                <div class="alert alert-info py-2 small mb-0">
+                    <i class="bi bi-info-circle me-1"></i> For cheque book requests or limits upgrade, visit the 
+                    <a asp-controller="Services" asp-action="Index" class="fw-bold">Services Portal</a>.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions Table -->
+    <div class="card shadow-sm border p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-dark mb-0">Recent Transactions</h5>
+            <a asp-action="Passbook" asp-route-id="@Model.AccountId" class="btn btn-sm btn-outline-secondary">
+                View All in Passbook <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle small mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Reference</th>
+                        <th>Description</th>
+                        <th>Mode</th>
+                        <th class="text-end">Amount</th>
+                        <th class="text-end">Closing Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (transactions.Any())
+                    {
+                        @foreach (var t in transactions)
+                        {
+                            <tr>
+                                <td>@t.TransactionDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="font-monospace small">@t.TransactionReference</td>
+                                <td>@t.Description</td>
+                                <td><span class="badge bg-light text-dark border">@t.PaymentMethod</span></td>
+                                <td class="text-end fw-bold @(t.DebitOrCredit == "Credit" ? "text-success" : "text-danger")">
+                                    @(t.DebitOrCredit == "Credit" ? "+ ₹" : "- ₹")@t.Amount.ToString("N2")
+                                </td>
+                                <td class="text-end font-monospace fw-bold">&#8377;@t.BalanceAfter.ToString("N2")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                <i class="bi bi-receipt me-1"></i> No transactions found for this account.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
