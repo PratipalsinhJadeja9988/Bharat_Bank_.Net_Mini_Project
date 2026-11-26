@@ -1,6 +1,6 @@
 # BharatTrust Bank (BharatBank)
 
-A role-based online banking simulation web application developed for the Semester 5 .NET Technology curriculum (Mumbai University). The project demonstrates core ASP.NET Core MVC, pure ADO.NET database operations, layered role-based access control (RBAC), and RESTful API development using .NET 8 and PostgreSQL.
+A role-based online banking simulation web application. .NET Technology curriculum (Marwadi University). The project demonstrates core ASP.NET Core MVC, pure ADO.NET database operations, layered role-based access control (RBAC), and RESTful API development using .NET 8 and PostgreSQL.
 
 ---
 
