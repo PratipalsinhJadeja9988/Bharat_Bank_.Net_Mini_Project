@@ -318,4 +318,4 @@ All requests to `BharatTrustBank.API` require the `X-Api-Key` header configured 
 
 ## Academic Disclaimer
 
-This application is an educational banking simulation developed for the Mumbai University (Sem 5) .NET Technology course. It is not connected to real banking networks or payment processors. All financial transactions, OTP verifications, payment confirmations, and account balances are simulated for practical learning and project demonstration purposes.
+This application is an educational banking simulation developed for the Marwadi University .NET Technology course. It is not connected to real banking networks or payment processors. All financial transactions, OTP verifications, payment confirmations, and account balances are simulated for practical learning and project demonstration purposes.
