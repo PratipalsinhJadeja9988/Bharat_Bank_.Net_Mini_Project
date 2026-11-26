@@ -1,0 +1,115 @@
+@model EmployeeDashboardViewModel
+@{
+    ViewData["Title"] = "Operations Desk";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Branch Operations & Verification Desk</h2>
+            <p class="text-muted small">Process customer KYC approvals, cheque book dispatches, service updates, and support inquiries</p>
+        </div>
+    </div>
+
+    <!-- Operations KPI Metrics -->
+    <div class="row g-3 mb-5">
+        <div class="col-md-3">
+            <a asp-action="KYC" asp-controller="Verification" class="text-decoration-none">
+                <div class="kpi-card kpi-blue">
+                    <div class="kpi-label">Pending KYC Verifications</div>
+                    <div class="kpi-val">@Model.PendingKYCVerificationCount</div>
+                    <small class="opacity-75">Requires Identity Verification</small>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a asp-action="ChequeRequests" asp-controller="Requests" class="text-decoration-none">
+                <div class="kpi-card kpi-gold">
+                    <div class="kpi-label">Pending Cheque Requests</div>
+                    <div class="kpi-val">@Model.PendingChequeRequestsCount</div>
+                    <small class="opacity-75">Ready for Postal Dispatch</small>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a asp-action="ServiceRequests" asp-controller="Requests" class="text-decoration-none">
+                <div class="kpi-card kpi-emerald">
+                    <div class="kpi-label">Profile Change Requests</div>
+                    <div class="kpi-val">@Model.PendingServiceRequestsCount</div>
+                    <small class="opacity-75">Address/Mobile/PAN Updates</small>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a asp-action="Index" asp-controller="Complaints" class="text-decoration-none">
+                <div class="kpi-card kpi-purple">
+                    <div class="kpi-label">Customer Support Tickets</div>
+                    <div class="kpi-val">@Model.OpenCustomerTicketsCount</div>
+                    <small class="opacity-75">Open Inquiries Pending Reply</small>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- KYC Quick Action Queue -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-person-check-fill text-primary me-2"></i> Pending Customer KYC Verifications</h5>
+            <a asp-action="KYC" asp-controller="Verification" class="small text-decoration-none">View All <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bank table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Customer Code</th>
+                            <th>Full Name</th>
+                            <th>Contact</th>
+                            <th>PAN Number</th>
+                            <th>Aadhaar No</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.PendingKYCCustomers.Any())
+                        {
+                            @foreach (var c in Model.PendingKYCCustomers)
+                            {
+                                <tr>
+                                    <td class="font-monospace fw-bold text-primary">@c.CustomerCode</td>
+                                    <td class="fw-bold">@c.FullName</td>
+                                    <td class="small">@c.Email<br />@c.MobileNumber</td>
+                                    <td class="font-monospace text-uppercase fw-semibold">@c.PAN</td>
+                                    <td class="font-monospace small">@c.Aadhaar</td>
+                                    <td>
+                                        <form asp-action="UpdateKYC" asp-controller="Verification" method="post" class="d-inline">
+                                            <input type="hidden" name="customerId" value="@c.CustomerId" />
+                                            <input type="hidden" name="status" value="Verified" />
+                                            <button type="submit" class="btn btn-sm btn-success px-3">
+                                                <i class="bi bi-check-lg"></i> Approve
+                                            </button>
+                                        </form>
+                                        <form asp-action="UpdateKYC" asp-controller="Verification" method="post" class="d-inline ms-1">
+                                            <input type="hidden" name="customerId" value="@c.CustomerId" />
+                                            <input type="hidden" name="status" value="Rejected" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="6" class="text-center py-4 text-muted">No pending KYC verifications.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
