@@ -1,10 +1,8 @@
 # BharatTrust Bank (BharatBank)
 
-<<<<<<< HEAD
 A role-based online banking simulation web application developed for the Semester 5 .NET Technology curriculum (Mumbai University). The project demonstrates core ASP.NET Core MVC, pure ADO.NET database operations, layered role-based access control (RBAC), and RESTful API development using .NET 8 and PostgreSQL.
 =======
 A role-based online banking simulation web application. .NET Technology curriculum (Marwadi University). The project demonstrates core ASP.NET Core MVC, pure ADO.NET database operations, layered role-based access control (RBAC), and RESTful API development using .NET 8 and PostgreSQL.
->>>>>>> 46e4cee23be4b7ccf12b3c765ad7daff92291468
 
 ---
 
@@ -322,8 +320,6 @@ All requests to `BharatTrustBank.API` require the `X-Api-Key` header configured 
 
 ## Academic Disclaimer
 
-<<<<<<< HEAD
 This application is an educational banking simulation developed for the Mumbai University (Sem 5) .NET Technology course. It is not connected to real banking networks or payment processors. All financial transactions, OTP verifications, payment confirmations, and account balances are simulated for practical learning and project demonstration purposes.
 =======
 This application is an educational banking simulation developed for the Marwadi University .NET Technology course. It is not connected to real banking networks or payment processors. All financial transactions, OTP verifications, payment confirmations, and account balances are simulated for practical learning and project demonstration purposes.
->>>>>>> 46e4cee23be4b7ccf12b3c765ad7daff92291468
