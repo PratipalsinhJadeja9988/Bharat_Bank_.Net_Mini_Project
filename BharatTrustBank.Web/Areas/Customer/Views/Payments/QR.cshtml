@@ -1,0 +1,75 @@
+@{
+    ViewData["Title"] = "Scan & Pay QR Simulation";
+    var accounts = ViewBag.Accounts as List<Account> ?? new List<Account>();
+}
+
+<div class="container my-5" style="max-width: 650px;">
+    <div class="card shadow p-4 p-md-5 text-center">
+        <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
+            <i class="bi bi-qr-code-scan display-6 text-primary"></i>
+            <h3 class="fw-bold mb-0">BharatTrust UPI QR Pay</h3>
+        </div>
+        <p class="text-muted small mb-4">Simulated Dynamic QR Code Payment & Merchant Checkout</p>
+
+        <!-- Simulated Visual QR Code Card -->
+        <div class="card bg-light border p-4 mb-4 mx-auto" style="max-width: 320px;">
+            <div class="p-3 bg-white rounded-3 border shadow-sm mb-3">
+                <!-- SVG Vector QR Code -->
+                <svg viewBox="0 0 100 100" style="width: 180px; height: 180px;" fill="#0b2545">
+                    <rect x="10" y="10" width="20" height="20" />
+                    <rect x="15" y="15" width="10" height="10" fill="#fff" />
+                    <rect x="70" y="10" width="20" height="20" />
+                    <rect x="75" y="15" width="10" height="10" fill="#fff" />
+                    <rect x="10" y="70" width="20" height="20" />
+                    <rect x="15" y="75" width="10" height="10" fill="#fff" />
+                    <rect x="40" y="10" width="10" height="20" />
+                    <rect x="55" y="15" width="10" height="10" />
+                    <rect x="40" y="40" width="20" height="20" />
+                    <rect x="10" y="40" width="20" height="10" />
+                    <rect x="70" y="40" width="20" height="10" />
+                    <rect x="40" y="70" width="10" height="20" />
+                    <rect x="55" y="75" width="15" height="15" />
+                    <rect x="75" y="75" width="15" height="15" />
+                </svg>
+            </div>
+            <div class="fw-bold small text-dark">BharatTrust Merchant ID</div>
+            <div class="font-monospace text-muted small">merchant.store@okbtb</div>
+        </div>
+
+        <!-- Payment Trigger Form -->
+        <form asp-action="ProcessQRPayment" method="post">
+            <div class="row g-3 text-start">
+                <div class="col-12">
+                    <label class="form-label fw-bold small">Pay From Account</label>
+                    <select name="accountId" class="form-select">
+                        @foreach (var acc in accounts)
+                        {
+                            <option value="@acc.AccountId">@acc.AccountNumber - @acc.AccountTypeName (Bal: &#8377;@acc.Balance.ToString("N2"))</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Merchant Name</label>
+                    <input type="text" name="merchantName" class="form-control" value="Starbucks Coffee Mumbai" required />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Amount (INR)</label>
+                    <input type="number" name="amount" class="form-control fw-bold" value="450.00" step="0.01" min="1" required />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label fw-bold small">Simulated UPI PIN / OTP (Enter: 123456)</label>
+                    <input type="text" name="otp" class="form-control text-center font-monospace fw-bold fs-5" value="123456" maxlength="6" required />
+                </div>
+
+                <div class="col-12 text-center mt-4">
+                    <button type="submit" class="btn btn-btb-primary btn-lg px-5 fw-bold shadow-sm">
+                        <i class="bi bi-check2-circle me-1"></i> Authorize QR Payment
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
