@@ -1,0 +1,196 @@
+@model List<Investment>
+@{
+    ViewData["Title"] = "Wealth & Investments Portfolio";
+    var accounts = ViewBag.Accounts as List<Account> ?? new List<Account>();
+    decimal totalInvested = (decimal)ViewBag.TotalInvested;
+    decimal currentValue = (decimal)ViewBag.CurrentValue;
+    decimal totalGain = (decimal)ViewBag.TotalGain;
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Investments & Wealth Portfolio</h2>
+            <p class="text-muted small">Manage Mutual Funds, SIPs, Sovereign Digital Gold, Government Bonds, and IPOs</p>
+        </div>
+        <button class="btn btn-btb-gold" data-bs-toggle="modal" data-bs-target="#newInvestmentModal">
+            <i class="bi bi-plus-circle me-1"></i> Make New Investment
+        </button>
+    </div>
+
+    <!-- Portfolio KPI Highlights -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="kpi-card kpi-blue">
+                <div class="kpi-label">Total Invested Amount</div>
+                <div class="kpi-val">&#8377;@totalInvested.ToString("N2")</div>
+                <small class="opacity-75">Principal Capital</small>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="kpi-card kpi-gold">
+                <div class="kpi-label">Current Portfolio Value</div>
+                <div class="kpi-val">&#8377;@currentValue.ToString("N2")</div>
+                <small class="opacity-75">Mark-to-Market Valuation</small>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="kpi-card kpi-emerald">
+                <div class="kpi-label">Total Unrealized Profit</div>
+                <div class="kpi-val">+&#8377;@totalGain.ToString("N2")</div>
+                <small class="opacity-75"><i class="bi bi-graph-up"></i> +@(totalInvested > 0 ? (totalGain/totalInvested*100m).ToString("F1") : "0")% Overall Return</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content & Holdings Table -->
+    <div class="row g-4 mb-4">
+        <!-- Holdings Table -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-pie-chart-fill text-primary me-2"></i> Current Asset Holdings</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bank table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Asset / Scheme</th>
+                                    <th>Category</th>
+                                    <th>Invested</th>
+                                    <th>Current Value</th>
+                                    <th>Returns</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Any())
+                                {
+                                    @foreach (var inv in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong class="text-dark">@inv.SchemeName</strong><br />
+                                                <small class="text-muted">Units: @inv.Units.ToString("F2") &bull; NAV: &#8377;@inv.NAV.ToString("F2")</small>
+                                            </td>
+                                            <td><span class="badge bg-light text-dark border">@inv.InvestmentType</span></td>
+                                            <td class="fw-semibold">&#8377;@inv.InvestedAmount.ToString("N0")</td>
+                                            <td class="fw-bold text-primary">&#8377;@inv.CurrentValue.ToString("N0")</td>
+                                            <td class="fw-bold text-success">+@inv.ReturnsPercent%</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="5" class="text-center py-4 text-muted">No active investments found.</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Asset Allocation Doughnut Chart -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-diagram-3-fill text-primary me-2"></i> Asset Allocation</h5>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <canvas id="portfolioChart" style="max-height: 240px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Investment Modal -->
+<div class="modal fade" id="newInvestmentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold text-dark"><i class="bi bi-graph-up-arrow text-primary me-2"></i> Make New Investment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="Invest" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Debit Account</label>
+                        <select name="accountId" class="form-select">
+                            @foreach (var acc in accounts)
+                            {
+                                <option value="@acc.AccountId">@acc.AccountNumber - (Bal: &#8377;@acc.Balance.ToString("N2"))</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Investment Category</label>
+                        <select name="investmentType" id="invCatSelect" class="form-select" onchange="updateSchemes()">
+                            <option value="Mutual Funds">Mutual Funds (Equity / Hybrid)</option>
+                            <option value="SIP">Systematic Investment Plan (SIP)</option>
+                            <option value="Gold Investment">Sovereign Digital Gold</option>
+                            <option value="Government Bonds">RBI Government Bonds</option>
+                            <option value="IPO">IPO Application</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Scheme / Instrument</label>
+                        <input type="text" name="schemeName" id="txtSchemeName" class="form-control" value="BharatTrust Bluechip Large Cap Fund" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Investment Amount (INR)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">&#8377;</span>
+                            <input type="number" name="amount" class="form-control fw-bold fs-5" value="10000" min="500" step="500" required />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-btb-primary">Authorize Investment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateSchemes() {
+            const cat = document.getElementById('invCatSelect').value;
+            const txt = document.getElementById('txtSchemeName');
+            if (cat === "Mutual Funds") txt.value = "BharatTrust Bluechip Large Cap Fund";
+            else if (cat === "SIP") txt.value = "BharatTrust Emerging Opportunities SIP";
+            else if (cat === "Gold Investment") txt.value = "Sovereign Digital Gold Bond 2026-I";
+            else if (cat === "Government Bonds") txt.value = "RBI Floating Rate Savings Bonds 2026";
+            else if (cat === "IPO") txt.value = "TechBharat Innovations Limited IPO";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('portfolioChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Mutual Funds', 'SIP', 'Digital Gold', 'Bonds'],
+                    datasets: [{
+                        data: [40, 20, 25, 15],
+                        backgroundColor: ['#0b2545', '#1d4ed8', '#f59e0b', '#10b981'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12 } }
+                    }
+                }
+            });
+        });
+    </script>
+}
