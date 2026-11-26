@@ -1,0 +1,65 @@
+@model List<InterestRate>
+@{
+    ViewData["Title"] = "Master Interest Rates Management";
+}
+
+<div class="container my-5" style="max-width: 950px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Master Interest Rates Control</h2>
+            <p class="text-muted small">Configure benchmark deposit and lending interest rates across BharatTrust Bank</p>
+        </div>
+        <a asp-action="Index" asp-controller="Dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bank table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Product Type</th>
+                            <th>Tenure / Tier</th>
+                            <th>Regular Rate (p.a.)</th>
+                            <th>Senior Citizen Rate</th>
+                            <th>Last Updated</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model)
+                        {
+                            <tr>
+                                <form asp-action="UpdateRate" method="post">
+                                    <input type="hidden" name="rateId" value="@r.RateId" />
+                                    <td class="fw-bold text-dark">@r.ProductType</td>
+                                    <td>@r.TenureOrTier</td>
+                                    <td style="max-width: 140px;">
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" step="0.05" name="regularRate" class="form-control fw-bold text-primary" value="@r.RegularRate" required />
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </td>
+                                    <td style="max-width: 140px;">
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" step="0.05" name="seniorCitizenRate" class="form-control fw-bold text-success" value="@r.SeniorCitizenRate" required />
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </td>
+                                    <td class="small text-muted">@r.LastUpdated.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        <button type="submit" class="btn btn-sm btn-btb-primary">
+                                            <i class="bi bi-floppy-fill me-1"></i> Update
+                                        </button>
+                                    </td>
+                                </form>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

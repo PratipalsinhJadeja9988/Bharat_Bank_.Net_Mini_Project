@@ -1,0 +1,83 @@
+@model List<FraudAlert>
+@{
+    ViewData["Title"] = "Fraud Monitoring & Risk Alerts";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Fraud Monitoring & AML Risk Center</h2>
+            <p class="text-muted small">Real-time rule-based suspicious transaction detection, large transfer anomalies, and alert resolution</p>
+        </div>
+        <a asp-action="Index" asp-controller="Dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bank table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Alert ID</th>
+                            <th>Customer & Account</th>
+                            <th>Trigger Rule</th>
+                            <th>Risk Level</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Investigation Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var f in Model)
+                            {
+                                <tr>
+                                    <td class="font-monospace fw-bold text-danger">#@f.AlertId</td>
+                                    <td>
+                                        <strong class="text-dark">@f.CustomerName</strong><br />
+                                        <small class="font-monospace text-muted">@f.AccountNumber</small>
+                                    </td>
+                                    <td><span class="badge bg-light text-dark border fw-bold">@f.TriggerRule</span></td>
+                                    <td>
+                                        <span class="badge @(f.RiskLevel == "High" || f.RiskLevel == "Critical" ? "bg-danger" : "bg-warning text-dark") fs-6">
+                                            @f.RiskLevel
+                                        </span>
+                                    </td>
+                                    <td class="small" style="max-width: 250px;">@f.Description</td>
+                                    <td class="small">@f.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")</td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <form asp-action="ResolveAlert" method="post">
+                                                <input type="hidden" name="alertId" value="@f.AlertId" />
+                                                <input type="hidden" name="status" value="Resolved" />
+                                                <input type="hidden" name="remarks" value="Customer verified via phone confirmation." />
+                                                <button type="submit" class="btn btn-sm btn-success" title="Mark Resolved">
+                                                    <i class="bi bi-check-circle"></i> Resolved
+                                                </button>
+                                            </form>
+                                            <form asp-action="ResolveAlert" method="post">
+                                                <input type="hidden" name="alertId" value="@f.AlertId" />
+                                                <input type="hidden" name="status" value="False Positive" />
+                                                <input type="hidden" name="remarks" value="Legitimate business transaction verified." />
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary" title="False Positive">
+                                                    False Positive
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="7" class="text-center py-5 text-muted">No open fraud alerts requiring review.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

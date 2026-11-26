@@ -1,0 +1,77 @@
+@model List<Customer>
+@{
+    ViewData["Title"] = "KYC Customer Verification Queue";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">KYC Verification Center</h2>
+            <p class="text-muted small">Verify government identity documents (PAN / Aadhaar) and activate accounts</p>
+        </div>
+        <a asp-action="Index" asp-controller="Dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Desk
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bank table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>DOB & Gender</th>
+                            <th>Registered Address</th>
+                            <th>PAN Card</th>
+                            <th>Aadhaar Number</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var c in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong class="text-dark">@c.FullName</strong><br />
+                                        <small class="text-muted font-monospace">@c.CustomerCode &bull; @c.MobileNumber</small>
+                                    </td>
+                                    <td>@c.DateOfBirth.ToString("dd/MM/yyyy")<br /><small class="text-muted">@c.Gender</small></td>
+                                    <td class="small text-muted" style="max-width: 250px;">@c.Address, @c.City, @c.State - @c.Pincode</td>
+                                    <td class="font-monospace text-uppercase fw-bold text-primary">@c.PAN</td>
+                                    <td class="font-monospace fw-semibold">@c.Aadhaar</td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <form asp-action="UpdateKYC" method="post">
+                                                <input type="hidden" name="customerId" value="@c.CustomerId" />
+                                                <input type="hidden" name="status" value="Verified" />
+                                                <input type="hidden" name="remarks" value="Documents verified by Branch Officer." />
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    <i class="bi bi-check-circle me-1"></i> Approve KYC
+                                                </button>
+                                            </form>
+                                            <form asp-action="UpdateKYC" method="post">
+                                                <input type="hidden" name="customerId" value="@c.CustomerId" />
+                                                <input type="hidden" name="status" value="Rejected" />
+                                                <input type="hidden" name="remarks" value="Identity document mismatch." />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-x-circle me-1"></i> Reject
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="6" class="text-center py-4 text-muted">All customer KYC verifications are up to date!</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

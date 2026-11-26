@@ -1,0 +1,64 @@
+@model List<SupportTicket>
+@{
+    ViewData["Title"] = "Customer Helpdesk Inquiries";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Helpdesk & Support Complaints</h2>
+            <p class="text-muted small">Review customer queries and reply with branch resolutions</p>
+        </div>
+        <a asp-action="Index" asp-controller="Dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Desk
+        </a>
+    </div>
+
+    <div class="row g-4">
+        @if (Model.Any())
+        {
+            @foreach (var t in Model)
+            {
+                <div class="col-md-6">
+                    <div class="card shadow-sm border p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="font-monospace fw-bold text-primary">#@t.TicketNumber</span>
+                            <span class="badge @(t.Priority == "High" ? "bg-danger" : "bg-warning text-dark")">@t.Priority Priority</span>
+                        </div>
+
+                        <h5 class="fw-bold text-dark mb-1">@t.Subject</h5>
+                        <small class="text-muted mb-3 d-block">Raised by <strong>@t.CustomerName</strong> &bull; Category: @t.Category &bull; @t.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")</small>
+
+                        <div class="p-3 bg-light rounded-3 border mb-4 small text-dark" style="line-height: 1.6;">
+                            @t.Message
+                        </div>
+
+                        <!-- Resolution Form -->
+                        <form asp-action="ResolveTicket" method="post" class="mt-auto">
+                            <input type="hidden" name="ticketId" value="@t.TicketId" />
+                            <div class="mb-2">
+                                <label class="form-label fw-bold small text-muted">Resolution / Response to Customer</label>
+                                <textarea name="resolution" class="form-control form-control-sm" rows="2" placeholder="Enter resolution details..." required></textarea>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" name="status" value="Resolved" class="btn btn-sm btn-success flex-grow-1">
+                                    <i class="bi bi-check2-circle me-1"></i> Mark as Resolved
+                                </button>
+                                <button type="submit" name="status" value="In Progress" class="btn btn-sm btn-outline-secondary">
+                                    In Progress
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5 text-muted">
+                <i class="bi bi-check-circle display-4 text-success mb-3 d-block"></i>
+                <h5>No pending customer support tickets!</h5>
+            </div>
+        }
+    </div>
+</div>
