@@ -1,0 +1,76 @@
+@model List<ServiceRequest>
+@{
+    ViewData["Title"] = "Customer Service Change Requests";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Profile Update Requests Queue</h2>
+            <p class="text-muted small">Review customer profile modification requests (Address, Mobile, Email, PAN, Nominee)</p>
+        </div>
+        <a asp-action="Index" asp-controller="Dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Desk
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bank table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Customer Name</th>
+                            <th>Modification Type</th>
+                            <th>New Value</th>
+                            <th>Reason</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var s in Model)
+                            {
+                                <tr>
+                                    <td class="font-monospace fw-bold text-primary">#@s.ServiceRequestId</td>
+                                    <td class="fw-bold">@s.CustomerName</td>
+                                    <td><span class="badge bg-warning-subtle text-warning-emphasis">@s.RequestType</span></td>
+                                    <td class="fw-semibold text-dark">@s.NewValue</td>
+                                    <td class="small text-muted">@(s.Reason ?? "Not specified")</td>
+                                    <td class="small">@s.RequestDate.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <form asp-action="UpdateServiceRequest" method="post">
+                                                <input type="hidden" name="serviceRequestId" value="@s.ServiceRequestId" />
+                                                <input type="hidden" name="status" value="Approved" />
+                                                <input type="hidden" name="remarks" value="Approved after phone verification." />
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    <i class="bi bi-check-lg"></i> Approve
+                                                </button>
+                                            </form>
+                                            <form asp-action="UpdateServiceRequest" method="post">
+                                                <input type="hidden" name="serviceRequestId" value="@s.ServiceRequestId" />
+                                                <input type="hidden" name="status" value="Rejected" />
+                                                <input type="hidden" name="remarks" value="Customer request rejected." />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="7" class="text-center py-4 text-muted">No pending customer service requests.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
