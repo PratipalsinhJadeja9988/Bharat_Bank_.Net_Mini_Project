@@ -1,0 +1,66 @@
+@model List<ChequeRequest>
+@{
+    ViewData["Title"] = "Cheque Requests Dispatch Queue";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Cheque Book Requests Queue</h2>
+            <p class="text-muted small">Verify customer requests and issue dispatch tracking for courier delivery</p>
+        </div>
+        <a asp-action="Index" asp-controller="Dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Desk
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bank table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Customer Name</th>
+                            <th>Account No</th>
+                            <th>Leaves</th>
+                            <th>Delivery Address</th>
+                            <th>Request Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var r in Model)
+                            {
+                                <tr>
+                                    <td class="font-monospace fw-bold text-primary">#@r.RequestId</td>
+                                    <td class="fw-bold">@r.CustomerName</td>
+                                    <td class="font-monospace">@r.AccountNumber</td>
+                                    <td><span class="badge bg-primary-subtle text-primary">@r.NumberOfLeaves Leaves</span></td>
+                                    <td class="small text-muted" style="max-width: 250px;">@r.DeliveryAddress</td>
+                                    <td class="small">@r.RequestDate.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        <form asp-action="UpdateChequeStatus" method="post" class="d-inline">
+                                            <input type="hidden" name="requestId" value="@r.RequestId" />
+                                            <input type="hidden" name="status" value="Dispatched" />
+                                            <input type="hidden" name="remarks" value="Dispatched via BlueDart AWB: BTB889922" />
+                                            <button type="submit" class="btn btn-sm btn-btb-primary">
+                                                <i class="bi bi-truck me-1"></i> Dispatch
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="7" class="text-center py-4 text-muted">No pending cheque book requests.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
