@@ -1,0 +1,124 @@
+@model BillPayViewModel
+@{
+    ViewData["Title"] = "Utility Bill Payments & Recharge";
+}
+
+<div class="container my-5" style="max-width: 900px;">
+    <!-- Top Category Selector -->
+    <div class="card p-3 mb-4 shadow-sm">
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+            <a asp-action="Index" asp-route-category="Electricity" class="btn btn-sm @(Model.BillerCategory == "Electricity" ? "btn-btb-primary" : "btn-outline-secondary")">
+                <i class="bi bi-lightning-charge me-1"></i> Electricity
+            </a>
+            <a asp-action="Index" asp-route-category="Water" class="btn btn-sm @(Model.BillerCategory == "Water" ? "btn-btb-primary" : "btn-outline-secondary")">
+                <i class="bi bi-droplet me-1"></i> Water Bill
+            </a>
+            <a asp-action="Index" asp-route-category="Gas" class="btn btn-sm @(Model.BillerCategory == "Gas" ? "btn-btb-primary" : "btn-outline-secondary")">
+                <i class="bi bi-fire me-1"></i> Piped Gas
+            </a>
+            <a asp-action="Index" asp-route-category="Mobile" class="btn btn-sm @(Model.BillerCategory == "Mobile" ? "btn-btb-primary" : "btn-outline-secondary")">
+                <i class="bi bi-phone me-1"></i> Mobile Recharge
+            </a>
+            <a asp-action="Index" asp-route-category="DTH" class="btn btn-sm @(Model.BillerCategory == "DTH" ? "btn-btb-primary" : "btn-outline-secondary")">
+                <i class="bi bi-tv me-1"></i> DTH Recharge
+            </a>
+            <a asp-action="Index" asp-route-category="College Fee" class="btn btn-sm @(Model.BillerCategory == "College Fee" ? "btn-btb-primary" : "btn-outline-secondary")">
+                <i class="bi bi-mortarboard me-1"></i> College Fee
+            </a>
+            <a asp-action="QR" class="btn btn-sm btn-outline-success">
+                <i class="bi bi-qr-code-scan me-1"></i> Scan & Pay QR
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Bill Payment Form -->
+        <div class="col-lg-6">
+            <div class="card shadow p-4 h-100">
+                <h4 class="fw-bold mb-3"><i class="bi bi-receipt text-primary me-2"></i> Pay @Model.BillerCategory</h4>
+                <form asp-action="Index" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small shadow-sm mb-3"></div>
+                    <input type="hidden" asp-for="BillerCategory" />
+
+                    <div class="mb-3">
+                        <label asp-for="AccountId" class="form-label fw-bold small">Pay From Account</label>
+                        <select asp-for="AccountId" class="form-select">
+                            @foreach (var acc in Model.AvailableAccounts)
+                            {
+                                <option value="@acc.AccountId">@acc.AccountNumber - @acc.AccountTypeName (Bal: &#8377;@acc.Balance.ToString("N2"))</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="BillerName" class="form-label fw-bold small">Biller / Service Provider</label>
+                        <input asp-for="BillerName" class="form-control" placeholder="Provider Name" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ConsumerNumber" class="form-label fw-bold small">Consumer ID / Account No / Mobile</label>
+                        <input asp-for="ConsumerNumber" class="form-control font-monospace" placeholder="Consumer Number" required />
+                        <span asp-validation-for="ConsumerNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Amount" class="form-label fw-bold small">Bill Amount (INR)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">&#8377;</span>
+                            <input asp-for="Amount" class="form-control form-control-lg fs-5 fw-bold" placeholder="1250.00" required />
+                        </div>
+                        <span asp-validation-for="Amount" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-btb-primary w-100 fw-bold py-2 shadow-sm">
+                        <i class="bi bi-shield-check me-1"></i> Pay Bill Instantly
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Recent Bill Payments History -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-clock-history text-primary me-2"></i> Recent Payments</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bank table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Biller & Ref</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.PaymentHistory.Any())
+                                {
+                                    @foreach (var p in Model.PaymentHistory.Take(6))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@p.BillerName</strong><br />
+                                                <small class="text-muted font-monospace">@p.TransactionReference</small>
+                                            </td>
+                                            <td class="small">@p.PaymentDate.ToString("dd MMM yyyy")</td>
+                                            <td class="fw-bold text-dark">&#8377;@p.Amount.ToString("N2")</td>
+                                            <td><span class="badge bg-success-subtle text-success">@p.Status</span></td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="4" class="text-center py-4 text-muted">No payment history.</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
