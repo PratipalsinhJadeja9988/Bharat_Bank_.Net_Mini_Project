@@ -1,0 +1,136 @@
+@model RDViewModel
+@{
+    ViewData["Title"] = "Recurring Deposit (RD)";
+}
+
+<div class="container my-5" style="max-width: 950px;">
+    <div class="row g-4">
+        <!-- RD Creation Form -->
+        <div class="col-lg-6">
+            <div class="card shadow p-4 h-100">
+                <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-4">
+                    <div class="p-3 bg-primary-subtle text-primary rounded-3 fs-3">
+                        <i class="bi bi-calendar-check-fill"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">Start Recurring Deposit</h4>
+                        <small class="text-muted">Build a disciplined savings habit from ₹500/month</small>
+                    </div>
+                </div>
+
+                <form asp-action="RD" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small shadow-sm mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="AccountId" class="form-label fw-bold small">Debit Account for Monthly Installment</label>
+                        <select asp-for="AccountId" class="form-select">
+                            @foreach (var acc in Model.AvailableAccounts)
+                            {
+                                <option value="@acc.AccountId">@acc.AccountNumber - (Bal: &#8377;@acc.Balance.ToString("N2"))</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MonthlyInstallment" class="form-label fw-bold small"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">&#8377;</span>
+                            <input asp-for="MonthlyInstallment" id="rdInstallment" class="form-control form-control-lg fs-5 fw-bold" placeholder="2500" oninput="recalcRD()" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TenureMonths" class="form-label fw-bold small"></label>
+                        <select asp-for="TenureMonths" id="rdTenure" class="form-select" onchange="recalcRD()">
+                            <option value="6">6 Months (6.50% p.a.)</option>
+                            <option value="12" selected>12 Months (7.00% p.a.)</option>
+                            <option value="24">24 Months (7.30% p.a.)</option>
+                            <option value="36">36 Months (7.50% p.a.)</option>
+                        </select>
+                    </div>
+
+                    <!-- Calculated RD Card -->
+                    <div class="p-3 bg-light rounded-3 border mb-4">
+                        <div class="d-flex justify-content-between mb-1 small text-muted">
+                            <span>Total Deposit Over Tenure:</span>
+                            <strong id="dispRDTotal" class="text-dark fs-6">&#8377;30,000.00</strong>
+                        </div>
+                        <div class="d-flex justify-content-between pt-2 border-top fw-bold text-dark">
+                            <span>Estimated Maturity Payout:</span>
+                            <span id="dispRDMaturity" class="font-monospace text-primary fs-5">&#8377;31,137.50</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-btb-primary w-100 fw-bold py-2 shadow-sm">
+                        <i class="bi bi-check-circle me-1"></i> Start Recurring Deposit
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Active RDs List -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-journal-text text-primary me-2"></i> My Active Recurring Deposits</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bank table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>RD Number</th>
+                                    <th>Monthly</th>
+                                    <th>Maturity</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ExistingRDs.Any())
+                                {
+                                    @foreach (var rd in Model.ExistingRDs)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong class="font-monospace text-primary">@rd.RDNumber</strong><br />
+                                                <small class="text-muted">Paid: @rd.InstallmentsPaid / @rd.TenureMonths</small>
+                                            </td>
+                                            <td class="fw-bold">&#8377;@rd.MonthlyInstallment.ToString("N0")</td>
+                                            <td>
+                                                <strong class="text-success">&#8377;@rd.MaturityAmount.ToString("N0")</strong><br />
+                                                <small class="text-muted">Due: @rd.MaturityDate.ToString("dd MMM yyyy")</small>
+                                            </td>
+                                            <td><span class="badge bg-success-subtle text-success">@rd.Status</span></td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="4" class="text-center py-4 text-muted">No active Recurring Deposits.</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function recalcRD() {
+            const inst = parseFloat(document.getElementById('rdInstallment').value) || 0;
+            const tenure = parseInt(document.getElementById('rdTenure').value) || 12;
+            const rate = tenure >= 36 ? 7.50 : (tenure >= 24 ? 7.30 : (tenure >= 12 ? 7.00 : 6.50));
+
+            const total = inst * tenure;
+            const interest = (inst * tenure * (tenure + 1) / 24) * (rate / 100);
+            const maturity = total + interest;
+
+            document.getElementById('dispRDTotal').innerText = '₹' + total.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+            document.getElementById('dispRDMaturity').innerText = '₹' + maturity.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+        }
+        recalcRD();
+    </script>
+}

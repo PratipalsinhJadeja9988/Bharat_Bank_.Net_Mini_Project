@@ -1,0 +1,72 @@
+@model Transaction
+@{
+    ViewData["Title"] = "Transaction Receipt";
+}
+
+<div class="container my-5" style="max-width: 680px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Make Another Transfer
+        </a>
+        <button onclick="window.print()" class="btn btn-btb-primary">
+            <i class="bi bi-printer-fill me-1"></i> Print / Save Receipt
+        </button>
+    </div>
+
+    <!-- Official Transaction Receipt Container -->
+    <div class="card shadow-lg border p-4 p-md-5 bg-white" id="receiptPrintArea">
+        <div class="text-center border-bottom pb-4 mb-4">
+            <div class="bank-logo-icon mx-auto mb-2" style="width: 48px; height: 48px; font-size: 1.5rem;">
+                <i class="bi bi-bank2"></i>
+            </div>
+            <h4 class="fw-bold mb-0 text-dark">BharatTrust Bank</h4>
+            <small class="text-muted">Payment Confirmation & Transfer Advice</small>
+            <div class="mt-3">
+                <span class="badge bg-success-subtle text-success border border-success px-3 py-2 fs-6">
+                    <i class="bi bi-check-circle-fill me-1"></i> Transaction Successful
+                </span>
+            </div>
+        </div>
+
+        <div class="text-center mb-4">
+            <small class="text-muted text-uppercase fw-bold">Amount Transferred</small>
+            <div class="display-5 fw-bold text-primary font-monospace my-1">&#8377;@Model.Amount.ToString("N2")</div>
+            <div class="badge bg-light text-dark border">Payment Mode: @Model.PaymentMethod</div>
+        </div>
+
+        <div class="p-3 bg-light rounded-3 border mb-4">
+            <table class="table table-sm table-borderless small mb-0">
+                <tbody>
+                    <tr>
+                        <td class="text-muted">Transaction Reference:</td>
+                        <td class="font-monospace fw-bold text-end">@Model.TransactionReference</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Date & Time:</td>
+                        <td class="fw-bold text-end">@Model.TransactionDate.ToString("dd MMM yyyy, hh:mm:ss tt")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Beneficiary Name:</td>
+                        <td class="fw-bold text-end">@(Model.BeneficiaryName ?? "Self")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Destination Account / UPI:</td>
+                        <td class="font-monospace fw-bold text-end">@(Model.DestinationAccount ?? "N/A")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Purpose / Remarks:</td>
+                        <td class="text-end">@Model.Description</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Closing Account Balance:</td>
+                        <td class="font-monospace fw-bold text-end text-primary">&#8377;@Model.BalanceAfter.ToString("N2")</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center text-muted small border-top pt-3">
+            Simulated Transaction Advice &bull; For queries contact support@bharattrustbank.com or 1800-200-8899
+        </div>
+    </div>
+</div>

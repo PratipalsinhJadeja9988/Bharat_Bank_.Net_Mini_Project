@@ -1,0 +1,330 @@
+@model CustomerDashboardViewModel
+@{
+    ViewData["Title"] = "Customer Dashboard";
+}
+
+<div class="container my-4">
+    <!-- Welcome Header & Live Date -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0 brand-font">Welcome, @Model.Customer.FullName</h2>
+            <div class="text-muted small">Customer ID: <strong>@Model.Customer.CustomerCode</strong> &bull; Segment: <span class="badge bg-primary-subtle text-primary">@Model.Customer.Segment</span> &bull; <span class="text-success"><i class="bi bi-shield-fill-check"></i> Account Verified</span></div>
+        </div>
+        <div class="d-flex gap-2 mt-2 mt-md-0">
+            <a asp-area="Customer" asp-controller="Transfers" asp-action="Index" class="btn btn-btb-primary shadow-sm">
+                <i class="bi bi-send-fill me-1"></i> Quick Transfer
+            </a>
+            <a asp-area="Customer" asp-controller="Payments" asp-action="Index" class="btn btn-btb-gold shadow-sm">
+                <i class="bi bi-receipt me-1"></i> Pay Bill
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Summary Row (3D Tilt Cards) -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="tilt-card h-100">
+                <div class="kpi-card kpi-blue h-100">
+                    <div class="kpi-label">Available Balance</div>
+                    <div class="kpi-val">&#8377;@Model.TotalBalance.ToString("N2")</div>
+                    <small class="opacity-75">Across @Model.Accounts.Count Active Accounts</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="tilt-card h-100">
+                <div class="kpi-card kpi-gold h-100">
+                    <div class="kpi-label">Total Deposits (FD/RD)</div>
+                    <div class="kpi-val">&#8377;@Model.TotalDeposits.ToString("N2")</div>
+                    <small class="opacity-75">Guaranteed High Returns</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="tilt-card h-100">
+                <div class="kpi-card kpi-emerald h-100">
+                    <div class="kpi-label">Active Loans</div>
+                    <div class="kpi-val">&#8377;@Model.TotalLoansOutstanding.ToString("N2")</div>
+                    <small class="opacity-75">Next EMI Due in 12 Days</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="tilt-card h-100">
+                <div class="kpi-card kpi-purple h-100">
+                    <div class="kpi-label">Savings Rate</div>
+                    <div class="kpi-val">@Model.SpendingInsights.SavingsRate%</div>
+                    <small class="opacity-75"><i class="bi bi-graph-up-arrow"></i> +4.2% from last month</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Action Icons Strip -->
+    <div class="card mb-4 shadow-sm p-3 border-0">
+        <h6 class="fw-bold text-muted small text-uppercase mb-3"><i class="bi bi-grid-fill me-1 text-primary"></i> Quick Banking Services</h6>
+        <div class="row g-3 text-center">
+            <div class="col-4 col-md-2">
+                <div class="tilt-card">
+                    <a asp-area="Customer" asp-controller="Transfers" asp-action="Index" class="quick-action-btn py-2">
+                        <div class="action-icon"><i class="bi bi-send"></i></div>
+                        <div class="small fw-bold">Transfer</div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-4 col-md-2">
+                <div class="tilt-card">
+                    <a asp-area="Customer" asp-controller="Accounts" asp-action="Deposit" class="quick-action-btn py-2">
+                        <div class="action-icon"><i class="bi bi-cash-stack"></i></div>
+                        <div class="small fw-bold">Deposit</div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-4 col-md-2">
+                <div class="tilt-card">
+                    <a asp-area="Customer" asp-controller="Accounts" asp-action="Withdraw" class="quick-action-btn py-2">
+                        <div class="action-icon"><i class="bi bi-wallet-fill"></i></div>
+                        <div class="small fw-bold">Withdraw</div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-4 col-md-2">
+                <div class="tilt-card">
+                    <a asp-area="Customer" asp-controller="Deposits" asp-action="FD" class="quick-action-btn py-2">
+                        <div class="action-icon"><i class="bi bi-safe"></i></div>
+                        <div class="small fw-bold">Open FD</div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-4 col-md-2">
+                <div class="tilt-card">
+                    <a asp-area="Customer" asp-controller="Cards" asp-action="Index" class="quick-action-btn py-2">
+                        <div class="action-icon"><i class="bi bi-credit-card"></i></div>
+                        <div class="small fw-bold">Cards</div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-4 col-md-2">
+                <div class="tilt-card">
+                    <a asp-area="Customer" asp-controller="Services" asp-action="Index" class="quick-action-btn py-2">
+                        <div class="action-icon"><i class="bi bi-journal-text"></i></div>
+                        <div class="small fw-bold">Cheque Book</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="row g-4 mb-4">
+        <!-- Left: Accounts & Recent Transactions -->
+        <div class="col-lg-8">
+            <!-- Accounts Summary -->
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header d-flex justify-content-between align-items-center bg-white py-3">
+                    <span class="fw-bold brand-font"><i class="bi bi-wallet2 text-primary me-2"></i> My Bank Accounts</span>
+                    <a asp-area="Customer" asp-controller="Accounts" asp-action="Index" class="small text-decoration-none fw-semibold">Manage All <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bank table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Account No</th>
+                                    <th>Type</th>
+                                    <th>Available Balance</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var acc in Model.Accounts)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong class="font-monospace text-primary">@acc.AccountNumber</strong><br />
+                                            <small class="text-muted">IFSC: @acc.IFSCCode</small>
+                                        </td>
+                                        <td>@acc.AccountTypeName</td>
+                                        <td class="fw-bold fs-6">&#8377;@acc.Balance.ToString("N2")</td>
+                                        <td><span class="badge @(acc.Status == "Active" ? "bg-success" : "bg-warning text-dark")">@acc.Status</span></td>
+                                        <td>
+                                            <a asp-area="Customer" asp-controller="Accounts" asp-action="Passbook" asp-route-id="@acc.AccountId" class="btn btn-sm btn-outline-primary" title="Passbook">
+                                                <i class="bi bi-journal-bookmark"></i> Passbook
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions Table -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header d-flex justify-content-between align-items-center bg-white py-3">
+                    <span class="fw-bold brand-font"><i class="bi bi-clock-history text-primary me-2"></i> Recent Transactions</span>
+                    <a asp-area="Customer" asp-controller="Accounts" asp-action="Index" class="small text-decoration-none fw-semibold">Detailed History <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bank table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Reference & Date</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                    <th>Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.RecentTransactions.Any())
+                                {
+                                    @foreach (var t in Model.RecentTransactions)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="font-monospace small fw-bold">@t.TransactionReference</span><br />
+                                                <small class="text-muted">@t.TransactionDate.ToString("dd MMM yyyy, hh:mm tt")</small>
+                                            </td>
+                                            <td class="small">@t.Description</td>
+                                            <td><span class="badge bg-light text-dark border">@t.Category</span></td>
+                                            <td class="fw-bold @(t.DebitOrCredit == "Credit" ? "text-success" : "text-danger")">
+                                                @(t.DebitOrCredit == "Credit" ? "+ " : "- ")&#8377;@t.Amount.ToString("N2")
+                                            </td>
+                                            <td class="small fw-semibold text-muted">&#8377;@t.BalanceAfter.ToString("N2")</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="5" class="text-center py-3 text-muted">No transactions found.</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: 3D Interactive Flip Card Preview & Charts -->
+        <div class="col-lg-4">
+            <!-- 3D Interactive Debit/Credit Card Component (Section 3.0 & 3.3) -->
+            @if (Model.DebitCards.Any())
+            {
+                var card = Model.DebitCards.First();
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold small text-muted text-uppercase"><i class="bi bi-credit-card-2-front text-primary me-1"></i> Interactive 3D Card</span>
+                        <span class="badge bg-light text-dark border"><i class="bi bi-arrow-repeat text-primary me-1"></i> Click to Flip</span>
+                    </div>
+                    <div class="card-3d-container">
+                        <div class="card-3d-flipper">
+                            <!-- Card Front Face -->
+                            <div class="card-3d-face card-3d-front @(card.Status == "Blocked" ? "card-blocked" : "")">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold brand-font">BharatBank</span>
+                                    <span class="badge bg-warning text-dark font-monospace">@card.CardType</span>
+                                </div>
+                                <div class="card-chip-3d"></div>
+                                <div class="card-number-3d">@card.CardNumber</div>
+                                <div class="d-flex justify-content-between align-items-end small">
+                                    <div>
+                                        <div class="text-white-50" style="font-size: 0.65rem;">CARD HOLDER</div>
+                                        <div class="fw-bold text-uppercase">@card.CardHolderName</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-white-50" style="font-size: 0.65rem;">EXPIRES</div>
+                                        <div class="fw-bold font-monospace">@card.ExpiryDate</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Back Face -->
+                            <div class="card-3d-face card-3d-back">
+                                <div class="magnetic-strip"></div>
+                                <div class="signature-bar my-2">
+                                    <span>AUTHORIZED SIGNATURE</span>
+                                    <span class="fw-bold text-danger">CVV: @card.CVV</span>
+                                </div>
+                                <div class="text-white-50 small mt-auto" style="font-size: 0.68rem; line-height: 1.3;">
+                                    This card is issued by BharatBank for academic simulation. 24x7 Helpline: 1800-200-8899.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Spending Trends Chart -->
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0 fw-bold brand-font"><i class="bi bi-bar-chart-fill text-primary me-2"></i> Income vs Spending (5 Months)</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlyTrendChart" style="max-height: 220px;"></canvas>
+                </div>
+            </div>
+
+            <!-- In-App Notifications -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold brand-font"><i class="bi bi-bell-fill text-warning me-2"></i> Alerts & Notifications</h6>
+                    <span class="badge bg-danger rounded-pill">@Model.UnreadNotificationCount New</span>
+                </div>
+                <div class="list-group list-group-flush small">
+                    @foreach (var n in Model.Notifications)
+                    {
+                        <div class="list-group-item">
+                            <div class="fw-bold text-dark">@n.Title</div>
+                            <div class="text-muted">@n.Message</div>
+                            <small class="text-secondary" style="font-size: 0.7rem;">@n.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('monthlyTrendChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                    datasets: [
+                        {
+                            label: 'Income (₹)',
+                            data: [95000, 95000, 100000, 105000, 110000],
+                            backgroundColor: '#0b2545',
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Expense (₹)',
+                            data: [34000, 41000, 38500, 29000, 31200],
+                            backgroundColor: '#d97706',
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top', labels: { boxWidth: 12 } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { callback: v => '₹' + (v/1000) + 'k' } }
+                    }
+                }
+            });
+        });
+    </script>
+}

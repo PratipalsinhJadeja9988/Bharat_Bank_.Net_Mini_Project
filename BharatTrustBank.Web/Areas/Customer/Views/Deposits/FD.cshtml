@@ -1,0 +1,158 @@
+@model FDViewModel
+@{
+    ViewData["Title"] = "Fixed Deposit (FD)";
+}
+
+<div class="container my-5" style="max-width: 950px;">
+    <div class="row g-4">
+        <!-- FD Creation & Calculator Form -->
+        <div class="col-lg-6">
+            <div class="card shadow p-4 h-100">
+                <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-4">
+                    <div class="p-3 bg-warning-subtle text-warning-emphasis rounded-3 fs-3">
+                        <i class="bi bi-safe-fill"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">Open Fixed Deposit</h4>
+                        <small class="text-muted">Earn high guaranteed interest up to 8.15% p.a.</small>
+                    </div>
+                </div>
+
+                <form asp-action="FD" method="post" id="fdForm">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small shadow-sm mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="AccountId" class="form-label fw-bold small">Debit Account</label>
+                        <select asp-for="AccountId" class="form-select">
+                            @foreach (var acc in Model.AvailableAccounts)
+                            {
+                                <option value="@acc.AccountId">@acc.AccountNumber - (Bal: &#8377;@acc.Balance.ToString("N2"))</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PrincipalAmount" class="form-label fw-bold small"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">&#8377;</span>
+                            <input asp-for="PrincipalAmount" id="fdPrincipal" class="form-control form-control-lg fs-5 fw-bold" placeholder="50000" oninput="recalcFD()" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TenureMonths" class="form-label fw-bold small"></label>
+                        <select asp-for="TenureMonths" id="fdTenure" class="form-select" onchange="recalcFD()">
+                            <option value="6">6 Months (6.50% p.a.)</option>
+                            <option value="12" selected>12 Months (7.10% p.a.)</option>
+                            <option value="24">24 Months (7.40% p.a.)</option>
+                            <option value="36">36 Months (7.65% p.a.)</option>
+                            <option value="60">60 Months (7.75% p.a.)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input asp-for="IsSeniorCitizen" id="chkSenior" class="form-check-input" onchange="recalcFD()" />
+                        <label asp-for="IsSeniorCitizen" class="form-check-label small fw-semibold">
+                            Senior Citizen (+0.50% Extra Rate)
+                        </label>
+                    </div>
+
+                    <!-- Calculated Projection Card -->
+                    <div class="p-3 bg-light rounded-3 border mb-4">
+                        <div class="d-flex justify-content-between mb-1 small text-muted">
+                            <span>Applicable Interest Rate:</span>
+                            <strong id="dispFDRate" class="text-primary fs-6">7.10% p.a.</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1 small text-muted">
+                            <span>Estimated Interest Earned:</span>
+                            <strong id="dispFDInterest" class="text-success fs-6">&#8377;3,550.00</strong>
+                        </div>
+                        <div class="d-flex justify-content-between pt-2 border-top fw-bold text-dark">
+                            <span>Maturity Amount:</span>
+                            <span id="dispFDMaturity" class="font-monospace text-primary fs-5">&#8377;53,550.00</span>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input asp-for="AutoRenew" class="form-check-input" />
+                        <label asp-for="AutoRenew" class="form-check-label small text-muted">
+                            Auto-Renew on Maturity
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-btb-primary w-100 fw-bold py-2 shadow-sm">
+                        <i class="bi bi-shield-check me-1"></i> Confirm & Create Fixed Deposit
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Active FDs List -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-journal-check text-primary me-2"></i> My Active Fixed Deposits</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bank table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>FD Number & Rate</th>
+                                    <th>Principal</th>
+                                    <th>Maturity</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ExistingFDs.Any())
+                                {
+                                    @foreach (var fd in Model.ExistingFDs)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong class="font-monospace text-primary">@fd.FDNumber</strong><br />
+                                                <small class="badge bg-light text-dark border">@fd.InterestRate% p.a. &bull; @fd.TenureMonths Mos</small>
+                                            </td>
+                                            <td class="fw-bold">&#8377;@fd.PrincipalAmount.ToString("N0")</td>
+                                            <td>
+                                                <strong class="text-success">&#8377;@fd.MaturityAmount.ToString("N0")</strong><br />
+                                                <small class="text-muted">Due: @fd.MaturityDate.ToString("dd MMM yyyy")</small>
+                                            </td>
+                                            <td><span class="badge bg-success-subtle text-success">@fd.Status</span></td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="4" class="text-center py-4 text-muted">No active Fixed Deposits.</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function recalcFD() {
+            const p = parseFloat(document.getElementById('fdPrincipal').value) || 0;
+            const tenure = parseInt(document.getElementById('fdTenure').value) || 12;
+            const isSr = document.getElementById('chkSenior').checked;
+
+            let rate = tenure >= 60 ? 7.75 : (tenure >= 36 ? 7.65 : (tenure >= 24 ? 7.40 : (tenure >= 12 ? 7.10 : 6.50)));
+            if (isSr) rate += 0.50;
+
+            const interest = (p * (rate / 100) * (tenure / 12));
+            const maturity = p + interest;
+
+            document.getElementById('dispFDRate').innerText = rate.toFixed(2) + '% p.a.';
+            document.getElementById('dispFDInterest').innerText = '₹' + interest.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+            document.getElementById('dispFDMaturity').innerText = '₹' + maturity.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+        }
+        recalcFD();
+    </script>
+}

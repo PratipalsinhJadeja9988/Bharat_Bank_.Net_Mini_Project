@@ -1,0 +1,165 @@
+@{
+    ViewData["Title"] = "Service & Cheque Requests";
+    var accounts = ViewBag.Accounts as List<Account> ?? new List<Account>();
+    var chequeRequests = ViewBag.ChequeRequests as List<ChequeRequest> ?? new List<ChequeRequest>();
+    var serviceRequests = ViewBag.ServiceRequests as List<ServiceRequest> ?? new List<ServiceRequest>();
+    var customer = ViewBag.Customer as BharatTrustBank.Web.Models.Customer ?? new BharatTrustBank.Web.Models.Customer();
+}
+
+<div class="container my-5" style="max-width: 950px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Customer Service Center</h2>
+            <p class="text-muted small">Request cheque books, submit KYC updates (Address, Mobile, Email, PAN), and track service status</p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <!-- Request Cheque Book Form -->
+        <div class="col-md-6">
+            <div class="card shadow p-4 h-100">
+                <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-4">
+                    <div class="p-3 bg-primary-subtle text-primary rounded-3 fs-3">
+                        <i class="bi bi-journal-text"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">Request Cheque Book</h4>
+                        <small class="text-muted">Delivered via Speed Post to registered address</small>
+                    </div>
+                </div>
+
+                <form asp-action="RequestCheque" method="post">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Select Account</label>
+                        <select name="accountId" class="form-select">
+                            @foreach (var acc in accounts)
+                            {
+                                <option value="@acc.AccountId">@acc.AccountNumber - @acc.AccountTypeName</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Number of Cheque Leaves</label>
+                        <select name="numberOfLeaves" class="form-select">
+                            <option value="20">20 Leaves (Standard Individual)</option>
+                            <option value="50" selected>50 Leaves (Recommended)</option>
+                            <option value="100">100 Leaves (Commercial / High Volume)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small">Delivery Address</label>
+                        <textarea name="deliveryAddress" class="form-control" rows="3" required>@customer.Address, @customer.City, @customer.State - @customer.Pincode</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-btb-primary w-100 fw-bold py-2 shadow-sm">
+                        <i class="bi bi-send-fill me-1"></i> Submit Cheque Request
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Request Profile / KYC Update Form -->
+        <div class="col-md-6">
+            <div class="card shadow p-4 h-100">
+                <div class="d-flex align-items-center gap-3 border-bottom pb-3 mb-4">
+                    <div class="p-3 bg-warning-subtle text-warning-emphasis rounded-3 fs-3">
+                        <i class="bi bi-person-gear"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">Update KYC / Profile</h4>
+                        <small class="text-muted">Requires employee verification before update</small>
+                    </div>
+                </div>
+
+                <form asp-action="SubmitServiceRequest" method="post">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Request Type</label>
+                        <select name="requestType" class="form-select">
+                            <option value="Address Change">Address Change Request</option>
+                            <option value="Mobile Number Update">Mobile Number Update</option>
+                            <option value="Email Update">Email Address Update</option>
+                            <option value="PAN Update">PAN Card Correction</option>
+                            <option value="Nominee Change">Nominee Name & Details Update</option>
+                            <option value="Account Closure">Account Closure Request</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Current / Old Value (Optional)</label>
+                        <input type="text" name="oldValue" class="form-control" placeholder="e.g. Current Mobile: 9819123456" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">New Updated Value</label>
+                        <input type="text" name="newValue" class="form-control" placeholder="e.g. New Mobile: 9820987654" required />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small">Reason for Change</label>
+                        <input type="text" name="reason" class="form-control" placeholder="e.g. Relocated to new residence" />
+                    </div>
+
+                    <button type="submit" class="btn btn-btb-gold w-100 fw-bold py-2 shadow-sm">
+                        <i class="bi bi-check-circle me-1"></i> Submit Service Request
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Service Requests Status Table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-clock-history text-primary me-2"></i> Track Service & Cheque Requests</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bank table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Request ID & Type</th>
+                            <th>Date</th>
+                            <th>Details</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in chequeRequests)
+                        {
+                            <tr>
+                                <td>
+                                    <strong class="text-dark">Cheque Book (#@c.RequestId)</strong><br />
+                                    <small class="text-muted">Leaves: @c.NumberOfLeaves</small>
+                                </td>
+                                <td class="small">@c.RequestDate.ToString("dd MMM yyyy")</td>
+                                <td class="small text-muted">@c.DeliveryAddress</td>
+                                <td>
+                                    <span class="badge @(c.Status == "Dispatched" || c.Status == "Delivered" ? "bg-success" : (c.Status == "Rejected" ? "bg-danger" : "bg-warning text-dark"))">
+                                        @c.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                        @foreach (var s in serviceRequests)
+                        {
+                            <tr>
+                                <td>
+                                    <strong class="text-dark">@s.RequestType (#@s.ServiceRequestId)</strong>
+                                </td>
+                                <td class="small">@s.RequestDate.ToString("dd MMM yyyy")</td>
+                                <td class="small">New: <strong>@s.NewValue</strong> (@s.Reason)</td>
+                                <td>
+                                    <span class="badge @(s.Status == "Approved" ? "bg-success" : (s.Status == "Rejected" ? "bg-danger" : "bg-warning text-dark"))">
+                                        @s.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
