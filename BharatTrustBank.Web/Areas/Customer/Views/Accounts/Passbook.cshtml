@@ -1,0 +1,110 @@
+@model Account
+@{
+    ViewData["Title"] = "Digital Bank Passbook";
+    var transactions = ViewBag.Transactions as List<Transaction> ?? new List<Transaction>();
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Digital Account Passbook</h2>
+            <p class="text-muted small">Official BharatTrust Bank Ledger & Account Statement</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-btb-primary">
+                <i class="bi bi-printer-fill me-1"></i> Print / Save as PDF
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Accounts
+            </a>
+        </div>
+    </div>
+
+    <!-- Passbook Printable Container -->
+    <div class="card shadow border p-4 p-md-5 bg-white" id="passbookPrintSection">
+        <!-- Bank Header for Passbook Statement -->
+        <div class="row align-items-center border-bottom pb-4 mb-4">
+            <div class="col-md-6">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bank-logo-icon">
+                        <i class="bi bi-bank2"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0 text-dark">BharatTrust Bank</h4>
+                        <small class="text-muted">Suraksha Aur Vishwas, Har Kadam Par</small>
+                    </div>
+                </div>
+                <div class="small text-muted mt-2">
+                    Branch: @Model.BranchName<br />
+                    IFSC Code: @Model.IFSCCode &bull; MICR: 400240012
+                </div>
+            </div>
+
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                <div class="badge bg-light text-dark border px-3 py-2 fs-6 mb-2">PASSBOOK STATEMENT</div>
+                <div class="fw-bold text-dark">Account Holder: @Model.CustomerName</div>
+                <div class="font-monospace">A/C No: <strong>@Model.AccountNumber</strong></div>
+                <div class="small text-muted">A/C Type: @Model.AccountTypeName &bull; Generated on @DateTime.Now.ToString("dd MMM yyyy, hh:mm tt")</div>
+            </div>
+        </div>
+
+        <!-- Ledger Entries Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm small mb-0">
+                <thead class="table-light">
+                    <tr class="text-uppercase text-muted" style="font-size: 0.78rem;">
+                        <th>Date & Time</th>
+                        <th>Transaction Ref</th>
+                        <th>Particulars / Description</th>
+                        <th>Payment Mode</th>
+                        <th class="text-end">Withdrawal (Debit)</th>
+                        <th class="text-end">Deposit (Credit)</th>
+                        <th class="text-end">Balance (INR)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (transactions.Any())
+                    {
+                        @foreach (var t in transactions)
+                        {
+                            <tr>
+                                <td>@t.TransactionDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="font-monospace">@t.TransactionReference</td>
+                                <td>@t.Description</td>
+                                <td><span class="badge bg-light text-dark border">@t.PaymentMethod</span></td>
+                                <td class="text-end text-danger fw-bold">
+                                    @(t.DebitOrCredit == "Debit" ? "₹ " + t.Amount.ToString("N2") : "-")
+                                </td>
+                                <td class="text-end text-success fw-bold">
+                                    @(t.DebitOrCredit == "Credit" ? "₹ " + t.Amount.ToString("N2") : "-")
+                                </td>
+                                <td class="text-end font-monospace fw-bold">&#8377;@t.BalanceAfter.ToString("N2")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="7" class="text-center py-4 text-muted">No transactions recorded for this account.</td></tr>
+                    }
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                        <th colspan="6" class="text-end fw-bold">Current Closing Balance:</th>
+                        <th class="text-end font-monospace text-primary fs-6 fw-bold">&#8377;@Model.Balance.ToString("N2")</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Footer Sign-off -->
+        <div class="row mt-5 pt-3 border-top text-muted small">
+            <div class="col-8">
+                * This is a computer-generated bank passbook simulation created for academic evaluation. No physical signature required.
+            </div>
+            <div class="col-4 text-end">
+                <strong>For BharatTrust Bank Ltd.</strong><br /><br />
+                <span class="text-muted small">[Authorized Signatory]</span>
+            </div>
+        </div>
+    </div>
+</div>
